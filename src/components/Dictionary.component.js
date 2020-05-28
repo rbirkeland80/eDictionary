@@ -6,6 +6,14 @@ import Tab from '@material-ui/core/Tab';
 
 import AddWords from '../containers/AddWords.container';
 import WordsList from '../containers/WordsList.container';
+import {
+  ADDED,
+  DESCRIPTION,
+  E_TO_U,
+  TRANSLATION,
+  WORD,
+  U_TO_E
+} from '../constants/tableHeader.contants';
 import TabPanel from './TabPanel.component';
 
 const useStyles = makeStyles((theme) => ({
@@ -14,10 +22,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper
   }
 }));
-const checkColumns = ['Word', 'Translation', 'Added', 'Eng to Ukr', 'Ukr to Eng'];
-const checkFieldsList = 'value translation createdAt canEToU, canUtoE';
-const learnColumns = ['Word', 'Translation', 'Description', 'Added'];
-const learnFieldsList = 'value translation description createdAt';
+const checkColumns = [ WORD, TRANSLATION, ADDED, E_TO_U, U_TO_E ];
+const learnColumns = [ WORD, TRANSLATION, DESCRIPTION, ADDED ];
 
 const Dictionary = () => {
   const classes = useStyles();
@@ -38,11 +44,11 @@ const Dictionary = () => {
       </AppBar>
 
       <TabPanel value={value} index={0}>
-        <WordsList queryFields={learnFieldsList} columns={learnColumns} />
+        <WordsList columns={learnColumns} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <WordsList queryFields={checkFieldsList} columns={checkColumns} />
+        <WordsList columns={checkColumns} />
       </TabPanel>
 
       <TabPanel value={value} index={2}>

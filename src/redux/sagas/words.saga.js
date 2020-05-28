@@ -11,7 +11,12 @@ const {
 
 export function* fetchWords(action) {
   try {
-    const { data } = yield call(axios.get, 'http://localhost:8080/api/words/');
+    const { fields, limit = 50, skip = 0 } = action.payload;
+    const { data } = yield call(
+      axios.get,
+      'http://localhost:8080/api/words/',
+      { params: { fields, limit, skip } }
+    );
 
     yield put({
       type: FETCH_WORDS_SUCCESS,
