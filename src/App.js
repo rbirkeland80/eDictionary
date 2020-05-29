@@ -5,7 +5,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { amber, teal } from '@material-ui/core/colors';
 
 import configureStore from './store';
-import Dictionary from './components/Dictionary.component';
+import Dictionary from './containers/Dictionary.container';
 import logo from './logo.png';
 import './App.css';
 
