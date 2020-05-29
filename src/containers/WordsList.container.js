@@ -91,7 +91,7 @@ const WordsList = ({ columns, getWords, words }) => {
               <TableBody>
                 {
                   words.list.map(row => (
-                    <TableRow tabIndex={-1} key={`row-${row.value}`}>
+                    <TableRow tabIndex={-1} key={`row-${row.word}`}>
                       {
                         columns.map(col => (
                           <TableCell key={`cell-${col.label}-${row[col.prop]}`}>
@@ -121,20 +121,13 @@ const WordsList = ({ columns, getWords, words }) => {
 };
 
 WordsList.propTypes = {
-  columns: PropTypes.arrayOf(PropTypes.shape()).isRequired, // TODO shape columns
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   getWords: PropTypes.func.isRequired,
   words: PropTypes.shape({
     count: PropTypes.number.isRequired,
     limit: PropTypes.number.isRequired,
     skip: PropTypes.number.isRequired,
-    list: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        value: PropTypes.string.isRequired,
-        canEtoU: PropTypes.bool.isRequired,
-        canUtoE: PropTypes.bool.isRequired
-      }).isRequired
-    )
+    list: PropTypes.arrayOf(PropTypes.object)
   }),
 };
 

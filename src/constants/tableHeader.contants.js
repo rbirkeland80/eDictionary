@@ -22,7 +22,7 @@ export const TRANSLATION = {
 
 export const WORD = {
   label: 'Word',
-  prop: 'value'
+  prop: 'word'
 };
 
 export const U_TO_E = {
