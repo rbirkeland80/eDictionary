@@ -19,11 +19,17 @@ const AddWord = ({
     <>
       {
         fields.map((word, index) => (
-          <div key={index} className="d-flex justify-content-between align-items-end">
+          <div key={index} className="d-flex justify-content-between align-items-end mb-2">
             <Field
               required
               render={({ input }) => <TextField label="Word" onChange={evt => input.onChange(evt.target.value)} />}
               name={`${word}.word`}
+            />
+
+            <Field
+              required
+              render={({ input }) => <TextField label="Translation" onChange={evt => input.onChange(evt.target.value)} />}
+              name={`${word}.translation`}
             />
 
             <MoreHoriz color="secondary" onClick={expandWord} />
@@ -39,7 +45,7 @@ const AddWord = ({
 };
 
 AddWord.propTypes = {
-  fields: PropTypes.arrayOf(PropTypes.object),
+  fields: PropTypes.object,
   tryAddWord: PropTypes.func.isRequired,
   tryDeleteWord: PropTypes.func.isRequired
 };
