@@ -87,7 +87,7 @@ const WordsList = ({ columns, getWords, words }) => {
             <EnhancedTableHead classes={classes} columns={columns} onRequestSort={onSort} />
 
             {
-              (words && words.list && words.list.length) &&
+              (words && words.list && !!words.list.length) &&
               <TableBody>
                 {
                   words.list.map(row => (
