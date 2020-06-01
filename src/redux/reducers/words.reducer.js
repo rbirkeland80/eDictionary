@@ -1,8 +1,10 @@
+import { findIndex } from 'ramda';
+
 import ActionTypes from '../actions';
 
 const {
   FETCH_WORDS_SUCCESS,
-  SAVE_WORDS_SUCCESS
+  UPDATE_WORD_SUCCESS
 } = ActionTypes;
 
 const initialState = {
@@ -18,16 +20,17 @@ export default (state = initialState, action) => {
         list: action.payload,
       };
 
-    case SAVE_WORDS_SUCCESS:
-      const newList = action.payload.success || [];
-      const oldList = state.list || [];
-
+    case UPDATE_WORD_SUCCESS:
+      const updated = action.payload;
+      const index = findIndex(w => w._id === updated._id, state.list.list);
+      const newList = [ ...state.list.list ];
+      newList[index] = updated;
+console.log(action.payload, index, newList)
       return {
         ...state,
         list: {
           ...state.list,
-          count: oldList.count + newList.length,
-          list: [ ...newList, ...oldList.list ]
+          list: newList
         }
       }
 

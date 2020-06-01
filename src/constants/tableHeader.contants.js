@@ -28,6 +28,6 @@ export const WORD = {
 
 export const U_TO_E = {
   label: 'Ukr to Eng',
-  prop: 'canUtoE',
+  prop: 'canUToE',
   type: 'bool'
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { isNil, map } from 'ramda';
+import { flatten, map } from 'ramda';
 import { format } from 'date-fns';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -11,11 +11,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
+import Switch from '@material-ui/core/Switch';
 
 import EnhancedTableHead from '../components/EnhancedTableHead.component';
 import ActionTypes from '../redux/actions';
 
-const { FETCH_WORDS_REQUEST } = ActionTypes;
+const { FETCH_WORDS_REQUEST, UPDATE_WORD_REQUEST } = ActionTypes;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,30 +42,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const parseValue = (type, prop, row) => {
+const parseValue = (type, prop, row, cb) => {
   if (type === 'date') {
     return format(new Date(row[prop]), 'MMM dd, yyyy');
+  }
+
+  if (type === 'bool') {
+    return (
+      <Switch
+        checked={row[prop]}
+        onChange={(_, value) => cb(value, prop, row._id)}
+        color="primary"
+        name={prop}
+        inputProps={{ 'aria-label': 'primary checkbox' }}
+      />
+    );
   }
 
   return row[prop];
 };
 
-const WordsList = ({ columns, getWords, words }) => {
+const WordsList = ({ columns, getWords, tabValue, updateWord, words }) => {
   const [page, setPage] = useState(0);
+  const [tab, setTab] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const classes = useStyles();
-  const fields = map(f => `${f.prop} ${f.additionalProp}`, columns);
+  const fields = flatten(
+    map(f => f.additionalProp ? [f.prop, f.additionalProp] : [f.prop], columns)
+  );
 
   useEffect(() => {
-    if (isNil(words)) {
+    if (tab !== tabValue) {
+      setTab(tabValue);
       getWords({ fields });
     }
-  }, [fields, words, getWords]);
+  }, [fields, getWords, tab, tabValue]);
+
+  const tryUpdateWord = (value, prop, id) => {
+    updateWord({ id, data: { [`${prop}`]: value } });
+  };
 
   const formatCellData = (col, row) => {
-    const prop = parseValue(col.type, col.prop, row);
+    const prop = parseValue(col.type, col.prop, row, tryUpdateWord);
     const additionalProp = parseValue(col.additionalPropType, col.additionalProp, row);
-    const val = additionalProp ? `${prop} (pl: ${additionalProp})` : prop;
+    const val = additionalProp && typeof prop === 'string'
+      ? `${prop} (pl: ${additionalProp})`
+      : prop;
 
     return val;
   };
@@ -131,20 +154,24 @@ const WordsList = ({ columns, getWords, words }) => {
 WordsList.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   getWords: PropTypes.func.isRequired,
+  tabValue: PropTypes.number.isRequired,
   words: PropTypes.shape({
     count: PropTypes.number.isRequired,
     limit: PropTypes.number.isRequired,
     skip: PropTypes.number.isRequired,
     list: PropTypes.arrayOf(PropTypes.object)
   }),
+  updateWord: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
+  tabValue: state.currentTab.tabValue,
   words: state.words.list
 });
 
 const mapDispatchToProps = dispatch => ({
-  getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload })
+  getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload }),
+  updateWord: payload => dispatch({ type: UPDATE_WORD_REQUEST, payload })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WordsList);
