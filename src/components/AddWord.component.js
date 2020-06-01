@@ -27,7 +27,6 @@ const AddWord = ({
             />
 
             <Field
-              required
               render={({ input }) => <TextField label="Translation" onChange={evt => input.onChange(evt.target.value)} />}
               name={`${word}.translation`}
             />

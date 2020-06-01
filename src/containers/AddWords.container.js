@@ -15,7 +15,9 @@ const AddWords = ({ saveWords }) => {
   const initialValues = { words: [{ word: '' }] };
 
   const onSubmit = (formData) => {
-    saveWords(formData.words);
+    const data = formData.words.filter(word => !!word.word);
+
+    saveWords(data);
   };
 
   const tryAddWord = fields => {
