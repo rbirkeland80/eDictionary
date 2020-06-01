@@ -41,7 +41,6 @@ function* saveWords(action) {
       axios.post, url, { data }, { validateStatus: status => status === 200 || status === 422 }
     );
 
-    console.log(1, resp)
     yield put({
       type: SAVE_WORDS_SUCCESS,
       payload: resp.data,
