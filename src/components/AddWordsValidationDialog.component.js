@@ -22,8 +22,8 @@ const AddWordsValidationDialog = ({
     <DialogContent>
       <ul>
         {
-          errors && errors.map(error => (
-            <li key={error.item.word}>
+          errors && errors.map((error, i) => (
+            <li key={`${error.item.word}-${i}`}>
               <b>{error.item.word}</b> was not saved. Reason: {error.error.errmsg}
             </li>
           ))
