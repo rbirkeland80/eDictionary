@@ -27,6 +27,11 @@ const AddWord = ({
             />
 
             <Field
+              render={({ input }) => <TextField label="Plural" onChange={evt => input.onChange(evt.target.value)} />}
+              name={`${word}.plural`}
+            />
+
+            <Field
               render={({ input }) => <TextField label="Translation" onChange={evt => input.onChange(evt.target.value)} />}
               name={`${word}.translation`}
             />
