@@ -41,11 +41,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const parseValue = (type, prop, row) => {
+  if (type === 'date') {
+    return format(new Date(row[prop]), 'MMM dd, yyyy');
+  }
+
+  return row[prop];
+};
+
 const WordsList = ({ columns, getWords, words }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const classes = useStyles();
-  const fields = map(f => f.prop, columns);
+  const fields = map(f => `${f.prop} ${f.additionalProp}`, columns);
 
   useEffect(() => {
     if (isNil(words)) {
@@ -54,11 +62,11 @@ const WordsList = ({ columns, getWords, words }) => {
   }, [fields, words, getWords]);
 
   const formatCellData = (col, row) => {
-    if (col.type === 'date') {
-      return format(new Date(row[col.prop]), 'MMM dd, yyyy');
-    }
+    const prop = parseValue(col.type, col.prop, row);
+    const additionalProp = parseValue(col.additionalPropType, col.additionalProp, row);
+    const val = additionalProp ? `${prop} (pl: ${additionalProp})` : prop;
 
-    return row[col.prop];
+    return val;
   };
 
   const handleChangePage = (event, newPage) => {

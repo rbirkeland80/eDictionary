@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { filter } from 'ramda';
 import { connect } from 'react-redux';
 import { Form } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
@@ -15,7 +16,7 @@ const AddWords = ({ saveWords }) => {
   const initialValues = { words: [{ word: '' }] };
 
   const onSubmit = (formData) => {
-    const data = formData.words.filter(word => !!word.word);
+    const data = filter(word => !!word.word, formData.words);
 
     saveWords(data);
   };

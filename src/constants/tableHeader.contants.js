@@ -22,7 +22,8 @@ export const TRANSLATION = {
 
 export const WORD = {
   label: 'Word',
-  prop: 'word'
+  prop: 'word',
+  additionalProp: 'plural'
 };
 
 export const U_TO_E = {
