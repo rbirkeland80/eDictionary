@@ -13,22 +13,22 @@ const {
   SAVE_WORDS_SUCCESS,
   SET_MODAL_DATA,
   SET_MODAL_STATE,
-  SET_TAB_VALUE
+  SET_TAB_VALUE,
+  UPDATE_WORD_REQUEST,
+  UPDATE_WORD_SUCCESS,
+  UPDATE_WORD_FAILURE
 } = ActionTypes;
 
 const url = 'http://localhost:8080/api/words/';
 
 export function* fetchWords(action) {
   try {
-    const { fields, limit = 50, skip = 0 } = action.payload;
+    const { fields, limit = 50, listType, skip = 0 } = action.payload;
     const { data } = yield call(
       axios.get, url, { params: { fields, limit, skip } }
     );
 
-    yield put({
-      type: FETCH_WORDS_SUCCESS,
-      payload: { ...data },
-    });
+    yield put({ type: FETCH_WORDS_SUCCESS,  payload: { data, listType } });
   } catch (error) {
     yield put({ type: FETCH_WORDS_FAILURE, payload: error.message });
   }
@@ -41,10 +41,7 @@ function* saveWords(action) {
       axios.post, url, { data }, { validateStatus: status => status === 200 || status === 422 }
     );
 
-    yield put({
-      type: SAVE_WORDS_SUCCESS,
-      payload: resp.data,
-    });
+    yield put({ type: SAVE_WORDS_SUCCESS,  payload: resp.data });
 
     yield put({ type: SET_TAB_VALUE, payload: 0 });
 
@@ -61,7 +58,19 @@ function* saveWords(action) {
   }
 }
 
+function* updateWord(action) {
+  try {
+    const { id, data } = action.payload;
+    const resp = yield call(axios.put, `${url}/${id}`, { ...data });
+
+    yield put({ type: UPDATE_WORD_SUCCESS, payload: resp.data });
+  } catch (error) {
+    yield put({ type: UPDATE_WORD_FAILURE, payload: error.message });
+  }
+}
+
 export default [
   takeLatest(FETCH_WORDS_REQUEST, fetchWords),
   takeLatest(SAVE_WORDS_REQUEST, saveWords),
+  takeLatest(UPDATE_WORD_REQUEST, updateWord),
 ];
