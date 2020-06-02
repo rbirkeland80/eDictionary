@@ -78,10 +78,10 @@ const WordsList = ({ listType, getWords, updateWord, words }) => {
 
   useEffect(() => {
     getWords({ fields, limit: rowsPerPage, skip: page * rowsPerPage, listType });
-  }, [fields, getWords, listType, page, rowsPerPage]);
+  }, [listType, page, rowsPerPage]);
 
   const tryUpdateWord = (value, prop, id) => {
-    updateWord({ id, data: { [`${prop}`]: value } });
+    updateWord({ id, listType, data: { [`${prop}`]: value } });
   };
 
   const formatCellData = (col, row) => {

@@ -60,10 +60,10 @@ function* saveWords(action) {
 
 function* updateWord(action) {
   try {
-    const { id, data } = action.payload;
+    const { id, listType, data } = action.payload;
     const resp = yield call(axios.put, `${url}/${id}`, { ...data });
 
-    yield put({ type: UPDATE_WORD_SUCCESS, payload: resp.data });
+    yield put({ type: UPDATE_WORD_SUCCESS, payload: { data: resp.data, listType } });
   } catch (error) {
     yield put({ type: UPDATE_WORD_FAILURE, payload: error.message });
   }
