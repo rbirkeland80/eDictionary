@@ -31,3 +31,8 @@ export const U_TO_E = {
   prop: 'canUToE',
   type: 'bool'
 };
+
+export const COLUMNS = {
+  check: [ WORD, TRANSLATION, ADDED, E_TO_U, U_TO_E ],
+  learn: [ WORD, TRANSLATION, DESCRIPTION, ADDED ]
+};

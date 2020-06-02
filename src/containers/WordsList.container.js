@@ -13,10 +13,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import Switch from '@material-ui/core/Switch';
 
+import { CHECK, LEARN } from '../constants/listTypes.constants';
+import { COLUMNS } from '../constants/tableHeader.contants';
 import EnhancedTableHead from '../components/EnhancedTableHead.component';
 import ActionTypes from '../redux/actions';
 
 const { FETCH_WORDS_REQUEST, UPDATE_WORD_REQUEST } = ActionTypes;
+
+const rowsPerPageOptions = [5, 10, 15];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,21 +66,19 @@ const parseValue = (type, prop, row, cb) => {
   return row[prop];
 };
 
-const WordsList = ({ columns, getWords, tabValue, updateWord, words }) => {
+const WordsList = ({ listType, getWords, updateWord, words }) => {
   const [page, setPage] = useState(0);
-  const [tab, setTab] = useState(null);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
   const classes = useStyles();
+  const columns = COLUMNS[listType];
+  const list = words[listType];
   const fields = flatten(
     map(f => f.additionalProp ? [f.prop, f.additionalProp] : [f.prop], columns)
   );
 
   useEffect(() => {
-    if (tab !== tabValue) {
-      setTab(tabValue);
-      getWords({ fields });
-    }
-  }, [fields, getWords, tab, tabValue]);
+    getWords({ fields, limit: rowsPerPage, skip: page * rowsPerPage, listType });
+  }, [fields, getWords, listType, page, rowsPerPage]);
 
   const tryUpdateWord = (value, prop, id) => {
     updateWord({ id, data: { [`${prop}`]: value } });
@@ -118,10 +120,10 @@ const WordsList = ({ columns, getWords, tabValue, updateWord, words }) => {
             <EnhancedTableHead classes={classes} columns={columns} onRequestSort={onSort} />
 
             {
-              (words && words.list && !!words.list.length) &&
+              (list && list.list && !!list.list.length) &&
               <TableBody>
                 {
-                  words.list.map(row => (
+                  list.list.map(row => (
                     <TableRow tabIndex={-1} key={`row-${row.word}`}>
                       {
                         columns.map(col => (
@@ -138,9 +140,9 @@ const WordsList = ({ columns, getWords, tabValue, updateWord, words }) => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={rowsPerPageOptions}
           component="div"
-          count={(words && words.count) || 0}
+          count={(list && list.count) || 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
@@ -152,21 +154,16 @@ const WordsList = ({ columns, getWords, tabValue, updateWord, words }) => {
 };
 
 WordsList.propTypes = {
-  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
   getWords: PropTypes.func.isRequired,
   tabValue: PropTypes.number.isRequired,
-  words: PropTypes.shape({
-    count: PropTypes.number.isRequired,
-    limit: PropTypes.number.isRequired,
-    skip: PropTypes.number.isRequired,
-    list: PropTypes.arrayOf(PropTypes.object)
-  }),
+  words: PropTypes.object,
   updateWord: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   tabValue: state.currentTab.tabValue,
-  words: state.words.list
+  words: state.words
 });
 
 const mapDispatchToProps = dispatch => ({

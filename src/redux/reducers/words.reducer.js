@@ -8,16 +8,19 @@ const {
 } = ActionTypes;
 
 const initialState = {
-  list: null,
+  checkList: null,
+  learnList: null,
   item: null
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case FETCH_WORDS_SUCCESS:
+      const { data, listType } = action.payload;
+
       return {
         ...state,
-        list: action.payload,
+        [listType]: data
       };
 
     case UPDATE_WORD_SUCCESS:
@@ -25,7 +28,7 @@ export default (state = initialState, action) => {
       const index = findIndex(w => w._id === updated._id, state.list.list);
       const newList = [ ...state.list.list ];
       newList[index] = updated;
-console.log(action.payload, index, newList)
+
       return {
         ...state,
         list: {

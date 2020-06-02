@@ -7,16 +7,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import ActionTypes from '../redux/actions';
+import { CHECK, LEARN } from '../constants/listTypes.constants';
 import TabPanel from '../components/TabPanel.component';
 import AddWordsValidationDialog from '../components/AddWordsValidationDialog.component';
-import {
-  ADDED,
-  DESCRIPTION,
-  E_TO_U,
-  TRANSLATION,
-  WORD,
-  U_TO_E
-} from '../constants/tableHeader.contants';
 import { ADD_WORD_VALIDATION_ERROR } from '../constants/modals.constants';
 import AddWords from './AddWords.container';
 import WordsList from './WordsList.container';
@@ -28,8 +21,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper
   }
 }));
-const checkColumns = [ WORD, TRANSLATION, ADDED, E_TO_U, U_TO_E ];
-const learnColumns = [ WORD, TRANSLATION, DESCRIPTION, ADDED ];
 
 const Dictionary = ({
   addWordsValidationErrors,
@@ -64,11 +55,11 @@ const Dictionary = ({
       </AppBar>
 
       <TabPanel value={tabValue} index={0}>
-        <WordsList columns={learnColumns} />
+        <WordsList listType={LEARN} />
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
-        <WordsList columns={checkColumns} />
+        <WordsList listType={CHECK} />
       </TabPanel>
 
       <TabPanel value={tabValue} index={2}>
