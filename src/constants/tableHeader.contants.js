@@ -15,6 +15,12 @@ export const E_TO_U = {
   type: 'bool'
 };
 
+export const TO_CHECK_NEXT_TIME = {
+  label: 'Check next time',
+  prop: 'toVerifyNextTime',
+  type: 'bool'
+};
+
 export const TRANSLATION = {
   label: 'Translation',
   prop: 'translation'
@@ -33,6 +39,6 @@ export const U_TO_E = {
 };
 
 export const COLUMNS = {
-  check: [ WORD, TRANSLATION, ADDED, E_TO_U, U_TO_E ],
+  check: [ WORD, TRANSLATION, ADDED, E_TO_U, U_TO_E, TO_CHECK_NEXT_TIME ],
   learn: [ WORD, TRANSLATION, DESCRIPTION, ADDED ]
 };

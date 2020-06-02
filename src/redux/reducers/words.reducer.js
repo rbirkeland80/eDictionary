@@ -15,27 +15,29 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case FETCH_WORDS_SUCCESS:
+    case FETCH_WORDS_SUCCESS: {
       const { data, listType } = action.payload;
 
       return {
         ...state,
         [listType]: data
       };
+    }
 
-    case UPDATE_WORD_SUCCESS:
-      const updated = action.payload;
-      const index = findIndex(w => w._id === updated._id, state.list.list);
-      const newList = [ ...state.list.list ];
-      newList[index] = updated;
+    case UPDATE_WORD_SUCCESS: {
+      const { data, listType } = action.payload;
+      const index = findIndex(w => w._id === data._id, state[listType].list);
+      const newList = [ ...state[listType].list ];
+      newList[index] = data;
 
       return {
         ...state,
-        list: {
-          ...state.list,
+        [listType]: {
+          ...state[listType],
           list: newList
         }
       }
+    }
 
     default:
       return state;
