@@ -1,5 +1,6 @@
 import { findIndex } from 'ramda';
 
+import { CHECK, LEARN } from '../../constants/listTypes.constants';
 import ActionTypes from '../actions';
 
 const {
@@ -8,8 +9,8 @@ const {
 } = ActionTypes;
 
 const initialState = {
-  checkList: null,
-  learnList: null,
+  [`${CHECK}`]: null,
+  [`${LEARN}`]: null,
   item: null
 };
 

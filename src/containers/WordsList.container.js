@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { flatten, map } from 'ramda';
@@ -18,9 +18,7 @@ import { COLUMNS } from '../constants/tableHeader.contants';
 import EnhancedTableHead from '../components/EnhancedTableHead.component';
 import ActionTypes from '../redux/actions';
 
-const { FETCH_WORDS_REQUEST, UPDATE_WORD_REQUEST } = ActionTypes;
-
-const rowsPerPageOptions = [5, 10, 15];
+const { FETCH_WORDS_REQUEST, SET_TABLE_PAGER_SETTINGS, UPDATE_WORD_REQUEST } = ActionTypes;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,12 +64,12 @@ const parseValue = (type, prop, row, cb) => {
   return row[prop];
 };
 
-const WordsList = ({ listType, getWords, updateWord, words }) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
+const WordsList = ({ listType, getWords, setPagerSettings, tables, updateWord, words }) => {
   const classes = useStyles();
   const columns = COLUMNS[listType];
   const list = words[listType];
+  const pagerSettings = tables[`${listType}_pagerSettings`];
+  const { page, rowsPerPage, rowsPerPageOptions } = pagerSettings
   const fields = flatten(
     map(f => f.additionalProp ? [f.prop, f.additionalProp] : [f.prop], columns)
   );
@@ -94,8 +92,13 @@ const WordsList = ({ listType, getWords, updateWord, words }) => {
     return val;
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleChangePage = (_, newPage) => {
+    const data = {
+      ...pagerSettings,
+      page: newPage
+    };
+
+    setPagerSettings({ listType, data });
   };
 
   const onSort = (e, prop) => {
@@ -103,8 +106,13 @@ const WordsList = ({ listType, getWords, updateWord, words }) => {
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    const data = {
+      ...pagerSettings,
+      page: 0,
+      rowsPerPage: parseInt(event.target.value, 10)
+    };
+
+    setPagerSettings({ listType, data });
   };
 
   return (
@@ -156,18 +164,20 @@ const WordsList = ({ listType, getWords, updateWord, words }) => {
 WordsList.propTypes = {
   listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
   getWords: PropTypes.func.isRequired,
-  tabValue: PropTypes.number.isRequired,
+  setPagerSettings: PropTypes.func.isRequired,
+  tables: PropTypes.object.isRequired,
   words: PropTypes.object,
   updateWord: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  tabValue: state.currentTab.tabValue,
+  tables: state.tables,
   words: state.words
 });
 
 const mapDispatchToProps = dispatch => ({
   getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload }),
+  setPagerSettings: payload => dispatch({ type: SET_TABLE_PAGER_SETTINGS, payload }),
   updateWord: payload => dispatch({ type: UPDATE_WORD_REQUEST, payload })
 });
 
