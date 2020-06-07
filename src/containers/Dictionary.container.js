@@ -8,9 +8,10 @@ import Tab from '@material-ui/core/Tab';
 
 import ActionTypes from '../redux/actions';
 import { CHECK, LEARN } from '../constants/listTypes.constants';
+import { ADD_WORD_VALIDATION_ERROR } from '../constants/modals.constants';
 import TabPanel from '../components/TabPanel.component';
 import AddWordsValidationDialog from '../components/AddWordsValidationDialog.component';
-import { ADD_WORD_VALIDATION_ERROR } from '../constants/modals.constants';
+import CheckFilter from '../components/CheckFilter.component';
 import AddWords from './AddWords.container';
 import WordsList from './WordsList.container';
 
@@ -59,7 +60,7 @@ const Dictionary = ({
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
-        <WordsList listType={CHECK} />
+        <WordsList listType={CHECK} filter={CheckFilter} />
       </TabPanel>
 
       <TabPanel value={tabValue} index={2}>

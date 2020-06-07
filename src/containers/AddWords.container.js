@@ -35,7 +35,7 @@ const AddWords = ({ saveWords }) => {
         onSubmit={onSubmit}
         initialValues={initialValues}
         mutators={{ ...arrayMutators }}
-        render={({ handleSubmit, form, submitting, pristine }) => (
+        render={({ handleSubmit, form, invalid, submitting, pristine }) => (
           <form onSubmit={handleSubmit} className="w-50 mx-auto my-o">
             <FieldArray
               component={AddWord}
@@ -45,7 +45,7 @@ const AddWords = ({ saveWords }) => {
             />
 
             <div className="buttons text-right">
-              <Button className="mr-2" variant="contained" color="primary" type="submit" disabled={submitting || pristine}>
+              <Button className="mr-2" variant="contained" color="primary" type="submit" disabled={invalid || submitting || pristine}>
                 Save
               </Button>
 
