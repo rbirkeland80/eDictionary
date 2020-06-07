@@ -12,6 +12,11 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import Switch from '@material-ui/core/Switch';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Typography from '@material-ui/core/Typography';
 
 import { CHECK, LEARN } from '../constants/listTypes.constants';
 import { COLUMNS } from '../constants/tableHeader.contants';
@@ -24,6 +29,7 @@ const {
   GENERATE_QUIZ_REQUEST,
   SET_TABLE_FILTER_SETTINGS,
   SET_TABLE_PAGER_SETTINGS,
+  SET_TABLE_SORT_SETTINGS,
   UPDATE_WORD_REQUEST
 } = ActionTypes;
 
@@ -79,6 +85,7 @@ const WordsList = ({
   listType,
   setFilterSettings,
   setPagerSettings,
+  setSortSettings,
   tables,
   updateWord,
   words
@@ -90,20 +97,21 @@ const WordsList = ({
   const filterIsApplied = tables[`${listType}_filterIsApplied`];
   const filterSettings = tables[`${listType}_filterSettings`];
   const pagerSettings = tables[`${listType}_pagerSettings`];
+  const { sortDirection, sortProp } = tables[`${listType}_sortSettings`];
   const { page, rowsPerPage, rowsPerPageOptions } = pagerSettings
   const fields = flatten(
     map(f => f.additionalProp ? [f.prop, f.additionalProp] : [f.prop], columns)
   );
 
   useEffect(() => {
-    const baseReqData = { fields, skip: page * rowsPerPage, limit: rowsPerPage, listType };
+    const baseReqData = { fields, skip: page * rowsPerPage, limit: rowsPerPage, sortDirection, sortProp };
     const req = filterIsApplied ? generateQuiz : getWords;
     const reqData = filterIsApplied
-      ? { ...filterSettings, ...baseReqData }
-      : baseReqData;
+      ? { reqData: { ...filterSettings, ...baseReqData }, listType }
+      : { ...baseReqData, listType };
 
     req(reqData);
-  }, [listType, page, rowsPerPage]);
+  }, [listType, page, rowsPerPage, sortDirection, sortProp]);
 
   const tryUpdateWord = (value, prop, id) => {
     updateWord({ id, listType, data: { [`${prop}`]: value } });
@@ -128,8 +136,8 @@ const WordsList = ({
     setPagerSettings({ listType, data });
   };
 
-  const onSort = (e, prop) => {
-    console.log('sort: ', e, prop);
+  const onSort = (sortProp) => {
+    setSortSettings({ listType, sortProp });
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -143,10 +151,11 @@ const WordsList = ({
   };
 
   const onFilterApply = data => {
+    setPagerSettings({ listType, data: { ...pagerSettings, page: 0 } });
     const reqData = {
       ...data,
       fields,
-      skip: page * rowsPerPage,
+      skip: 0,
       limit: rowsPerPage
     };
     setFilterSettings({ listType, data });
@@ -163,7 +172,14 @@ const WordsList = ({
       <Paper className={classes.paper}>
         {
           Filter &&
-          <Filter initialValues={filterSettings} onFilterApply={onFilterApply} onFilterClear={onFilterClear} />
+          <ExpansionPanel>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography>Generate Quiz</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Filter initialValues={filterSettings} onFilterApply={onFilterApply} onFilterClear={onFilterClear} />
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
         }
         <TableContainer>
           <Table
@@ -172,7 +188,7 @@ const WordsList = ({
             size="medium"
             aria-label="enhanced table"
           >
-            <EnhancedTableHead classes={classes} columns={columns} onRequestSort={onSort} />
+            <EnhancedTableHead classes={classes} columns={columns} order={sortDirection} orderBy={sortProp} onRequestSort={onSort} />
 
             {
               (list && list.list && !!list.list.length) &&
@@ -216,6 +232,7 @@ WordsList.propTypes = {
   listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
   setFilterSettings: PropTypes.func.isRequired,
   setPagerSettings: PropTypes.func.isRequired,
+  setSortSettings: PropTypes.func.isRequired,
   tables: PropTypes.object.isRequired,
   words: PropTypes.object,
   updateWord: PropTypes.func.isRequired
@@ -232,6 +249,7 @@ const mapDispatchToProps = dispatch => ({
   getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload }),
   setFilterSettings: payload => dispatch({ type: SET_TABLE_FILTER_SETTINGS, payload }),
   setPagerSettings: payload => dispatch({ type: SET_TABLE_PAGER_SETTINGS, payload }),
+  setSortSettings: payload => dispatch({ type: SET_TABLE_SORT_SETTINGS, payload }),
   updateWord: payload => dispatch({ type: UPDATE_WORD_REQUEST, payload })
 });
 

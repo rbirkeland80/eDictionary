@@ -49,7 +49,7 @@ const CheckFilter = ({ initialValues, onFilterApply, onFilterClear }) => {
           />
 
           <div className="buttons text-right my-2">
-            <Button className="mr-2" onClick={() => onClear(form.restart)} variant="contained" color="secondary" disabled={submitting}>
+            <Button className="mr-2" onClick={() => onClear(form.restart)} variant="contained" disabled={submitting}>
               Clear
             </Button>
             <Button className="mr-2" variant="contained" color="primary" type="submit" disabled={submitting || pristine}>
