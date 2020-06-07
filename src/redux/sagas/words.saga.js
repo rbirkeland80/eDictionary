@@ -26,9 +26,9 @@ const url = 'http://localhost:8080/api/words/';
 
 export function* fetchWords(action) {
   try {
-    const { fields, limit = 50, listType, skip = 0 } = action.payload;
+    const { fields, limit = 50, listType, skip = 0, sortDirection, sortProp } = action.payload;
     const { data } = yield call(
-      axios.get, url, { params: { fields, limit, skip } }
+      axios.get, url, { params: { fields, limit, skip, sortDirection, sortProp } }
     );
 
     yield put({ type: FETCH_WORDS_SUCCESS,  payload: { data, listType } });

@@ -5,37 +5,31 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
-const EnhancedTableHead = ({ classes, columns, order, orderBy, onRequestSort }) => {
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
-
-  return (
-    <TableHead>
-      <TableRow>
-        {columns.map((column) => (
-          <TableCell
-            key={column.prop}
-            sortDirection={orderBy === column.prop ? order : false}
+const EnhancedTableHead = ({ classes, columns, order, orderBy, onRequestSort }) => (
+  <TableHead>
+    <TableRow>
+      {columns.map((column) => (
+        <TableCell
+          key={column.prop}
+          sortDirection={orderBy === column.prop ? order : false}
+        >
+          <TableSortLabel
+            active={orderBy === column.prop}
+            direction={orderBy === column.prop ? order : 'asc'}
+            onClick={() => onRequestSort(column.prop)}
           >
-            <TableSortLabel
-              active={orderBy === column.prop}
-              direction={orderBy === column.prop ? order : 'asc'}
-              onClick={createSortHandler(column.prop)}
-            >
-              {column.label}
-              {orderBy === column.prop ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-};
+            {column.label}
+            {orderBy === column.prop ? (
+              <span className={classes.visuallyHidden}>
+                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+              </span>
+            ) : null}
+          </TableSortLabel>
+        </TableCell>
+      ))}
+    </TableRow>
+  </TableHead>
+);
 
 EnhancedTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
