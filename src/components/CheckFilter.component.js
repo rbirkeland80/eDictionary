@@ -9,7 +9,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 
-const CheckFilter = ({ initialValues, onFilterApply, onFilterClear }) => {
+const CheckFilter = ({ initialValues, onFilterApply, onFilterClear, onVerify, showVerify }) => {
   const onClear = (reset) => {
     reset(initialValues);
     onFilterClear();
@@ -55,6 +55,12 @@ const CheckFilter = ({ initialValues, onFilterApply, onFilterClear }) => {
             <Button className="mr-2" variant="contained" color="primary" type="submit" disabled={submitting || pristine}>
               Load
             </Button>
+            {
+              showVerify &&
+              <Button className="mr-2" onClick={onVerify} variant="contained" color="primary">
+                Verify
+              </Button>
+            }
           </div>
         </form>
       )}
@@ -65,7 +71,9 @@ const CheckFilter = ({ initialValues, onFilterApply, onFilterClear }) => {
 CheckFilter.propTypes = {
   initialValues: PropTypes.object,
   onFilterApply: PropTypes.func.isRequired,
-  onFilterClear: PropTypes.func.isRequired
+  onFilterClear: PropTypes.func.isRequired,
+  onVerify: PropTypes.func.isRequired,
+  showVerify: PropTypes.bool.isRequired
 };
 
 export default CheckFilter;
