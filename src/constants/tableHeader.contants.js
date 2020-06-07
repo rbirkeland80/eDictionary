@@ -38,7 +38,13 @@ export const U_TO_E = {
   type: 'bool'
 };
 
+export const VERIFIED_AT = {
+  label: 'Verified at',
+  prop: 'lastVerifiedAt',
+  type: 'date'
+};
+
 export const COLUMNS = {
-  check: [ WORD, TRANSLATION, ADDED, E_TO_U, U_TO_E, TO_CHECK_NEXT_TIME ],
+  check: [ WORD, TRANSLATION, VERIFIED_AT, E_TO_U, U_TO_E, TO_CHECK_NEXT_TIME ],
   learn: [ WORD, TRANSLATION, DESCRIPTION, ADDED ]
 };

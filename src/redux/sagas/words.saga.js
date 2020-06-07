@@ -19,7 +19,10 @@ const {
   SET_TAB_VALUE,
   UPDATE_WORD_REQUEST,
   UPDATE_WORD_SUCCESS,
-  UPDATE_WORD_FAILURE
+  UPDATE_WORD_FAILURE,
+  VERIFY_QUIZ_REQUEST,
+  VERIFY_QUIZ_SUCCESS,
+  VERIFY_QUIZ_FAILURE
 } = ActionTypes;
 
 const url = 'http://localhost:8080/api/words/';
@@ -83,9 +86,20 @@ function* updateWord(action) {
   }
 }
 
+function* verifyQuiz(action) {
+  try {
+    yield call(axios.put, url, { ids: action.payload });
+
+    yield put({ type: VERIFY_QUIZ_SUCCESS });
+  } catch (error) {
+    yield put({ type: VERIFY_QUIZ_FAILURE, payload: error.message });
+  }
+}
+
 export default [
   takeLatest(FETCH_WORDS_REQUEST, fetchWords),
   takeLatest(GENERATE_QUIZ_REQUEST, generateQuiz),
   takeLatest(SAVE_WORDS_REQUEST, saveWords),
   takeLatest(UPDATE_WORD_REQUEST, updateWord),
+  takeLatest(VERIFY_QUIZ_REQUEST, verifyQuiz)
 ];

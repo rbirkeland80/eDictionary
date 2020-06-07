@@ -20,17 +20,21 @@ import Typography from '@material-ui/core/Typography';
 
 import { CHECK, LEARN } from '../constants/listTypes.constants';
 import { COLUMNS } from '../constants/tableHeader.contants';
+import { CONFIRM_VALIDATE_QUIZ } from '../constants/modals.constants';
 import EnhancedTableHead from '../components/EnhancedTableHead.component';
+import ConfirmVerifyQuizDialog from '../components/ConfirmVerifyQuizDialog.component';
 import ActionTypes from '../redux/actions';
 
 const {
   CLEAR_TABLE_FILTER_SETTINGS,
   FETCH_WORDS_REQUEST,
   GENERATE_QUIZ_REQUEST,
+  SET_MODAL_STATE,
   SET_TABLE_FILTER_SETTINGS,
   SET_TABLE_PAGER_SETTINGS,
   SET_TABLE_SORT_SETTINGS,
-  UPDATE_WORD_REQUEST
+  UPDATE_WORD_REQUEST,
+  VERIFY_QUIZ_REQUEST
 } = ActionTypes;
 
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +63,9 @@ const useStyles = makeStyles((theme) => ({
 
 const parseValue = (type, prop, row, cb) => {
   if (type === 'date') {
-    return format(new Date(row[prop]), 'MMM dd, yyyy');
+    return row[prop]
+      ? format(new Date(row[prop]), 'MMM dd, yyyy')
+      : null;
   }
 
   if (type === 'bool') {
@@ -79,15 +85,18 @@ const parseValue = (type, prop, row, cb) => {
 
 const WordsList = ({
   clearFilter,
+  confirmModalOpened,
   filter,
   generateQuiz,
   getWords,
   listType,
   setFilterSettings,
+  setModalState,
   setPagerSettings,
   setSortSettings,
   tables,
   updateWord,
+  verifyQuiz,
   words
 }) => {
   const Filter = filter;
@@ -112,6 +121,10 @@ const WordsList = ({
 
     req(reqData);
   }, [listType, page, rowsPerPage, sortDirection, sortProp]);
+
+  const confirmValidateQuiz = () => {
+    setModalState(CONFIRM_VALIDATE_QUIZ, false);
+  };
 
   const tryUpdateWord = (value, prop, id) => {
     updateWord({ id, listType, data: { [`${prop}`]: value } });
@@ -167,6 +180,11 @@ const WordsList = ({
     getWords({ fields, skip: page * rowsPerPage, limit: rowsPerPage, listType });
   };
 
+  const onQuizVerify = () => {
+    verifyQuiz(list.list.map(i => i._id));
+    setModalState(CONFIRM_VALIDATE_QUIZ, true);
+  };
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -177,17 +195,18 @@ const WordsList = ({
               <Typography>Generate Quiz</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              <Filter initialValues={filterSettings} onFilterApply={onFilterApply} onFilterClear={onFilterClear} />
+              <Filter
+                initialValues={filterSettings}
+                onFilterApply={onFilterApply}
+                onFilterClear={onFilterClear}
+                onVerify={onQuizVerify}
+                showVerify={filterIsApplied}
+              />
             </ExpansionPanelDetails>
           </ExpansionPanel>
         }
         <TableContainer>
-          <Table
-            className={classes.table}
-            aria-labelledby="tableTitle"
-            size="medium"
-            aria-label="enhanced table"
-          >
+          <Table className={classes.table} aria-labelledby="tableTitle">
             <EnhancedTableHead classes={classes} columns={columns} order={sortDirection} orderBy={sortProp} onRequestSort={onSort} />
 
             {
@@ -220,25 +239,31 @@ const WordsList = ({
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
+
+      <ConfirmVerifyQuizDialog modalOpened={confirmModalOpened} handleClose={confirmValidateQuiz} />
     </div>
   );
 };
 
 WordsList.propTypes = {
   clearFilter: PropTypes.func.isRequired,
+  confirmModalOpened: PropTypes.bool.isRequired,
   filter: PropTypes.any,
   generateQuiz: PropTypes.func.isRequired,
   getWords: PropTypes.func.isRequired,
   listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
   setFilterSettings: PropTypes.func.isRequired,
   setPagerSettings: PropTypes.func.isRequired,
+  setModalState: PropTypes.func.isRequired,
   setSortSettings: PropTypes.func.isRequired,
   tables: PropTypes.object.isRequired,
   words: PropTypes.object,
-  updateWord: PropTypes.func.isRequired
+  updateWord: PropTypes.func.isRequired,
+  verifyQuiz: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
+  confirmModalOpened: state.modals[CONFIRM_VALIDATE_QUIZ],
   tables: state.tables,
   words: state.words
 });
@@ -248,9 +273,11 @@ const mapDispatchToProps = dispatch => ({
   generateQuiz: payload => dispatch({ type: GENERATE_QUIZ_REQUEST, payload }),
   getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload }),
   setFilterSettings: payload => dispatch({ type: SET_TABLE_FILTER_SETTINGS, payload }),
+  setModalState: (type, value) => dispatch({ type: SET_MODAL_STATE, payload: { type, value } }),
   setPagerSettings: payload => dispatch({ type: SET_TABLE_PAGER_SETTINGS, payload }),
   setSortSettings: payload => dispatch({ type: SET_TABLE_SORT_SETTINGS, payload }),
-  updateWord: payload => dispatch({ type: UPDATE_WORD_REQUEST, payload })
+  updateWord: payload => dispatch({ type: UPDATE_WORD_REQUEST, payload }),
+  verifyQuiz: payload => dispatch({ type: VERIFY_QUIZ_REQUEST, payload })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WordsList);

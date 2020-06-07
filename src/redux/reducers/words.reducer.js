@@ -1,4 +1,4 @@
-import { findIndex } from 'ramda';
+import { clone, findIndex } from 'ramda';
 
 import { CHECK, LEARN } from '../../constants/listTypes.constants';
 import ActionTypes from '../actions';
@@ -6,7 +6,8 @@ import ActionTypes from '../actions';
 const {
   FETCH_WORDS_SUCCESS,
   GENERATE_QUIZ_SUCCESS,
-  UPDATE_WORD_SUCCESS
+  UPDATE_WORD_SUCCESS,
+  VERIFY_QUIZ_SUCCESS
 } = ActionTypes;
 
 const initialState = {
@@ -39,6 +40,16 @@ export default (state = initialState, action) => {
           ...state[listType],
           list: newList
         }
+      }
+    }
+
+    case VERIFY_QUIZ_SUCCESS: {
+      const checkList = clone(state[`${CHECK}`]);
+      checkList.list.forEach(i => i.lastVerifiedAt = new Date());
+
+      return {
+        ...state,
+        [`${CHECK}`]: checkList
       }
     }
 
