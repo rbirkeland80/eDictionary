@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { flatten, map } from 'ramda';
@@ -18,9 +18,14 @@ import { COLUMNS } from '../constants/tableHeader.contants';
 import EnhancedTableHead from '../components/EnhancedTableHead.component';
 import ActionTypes from '../redux/actions';
 
-const { FETCH_WORDS_REQUEST, UPDATE_WORD_REQUEST } = ActionTypes;
-
-const rowsPerPageOptions = [5, 10, 15];
+const {
+  CLEAR_TABLE_FILTER_SETTINGS,
+  FETCH_WORDS_REQUEST,
+  GENERATE_QUIZ_REQUEST,
+  SET_TABLE_FILTER_SETTINGS,
+  SET_TABLE_PAGER_SETTINGS,
+  UPDATE_WORD_REQUEST
+} = ActionTypes;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,18 +71,38 @@ const parseValue = (type, prop, row, cb) => {
   return row[prop];
 };
 
-const WordsList = ({ listType, getWords, updateWord, words }) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
+const WordsList = ({
+  clearFilter,
+  filter,
+  generateQuiz,
+  getWords,
+  listType,
+  setFilterSettings,
+  setPagerSettings,
+  tables,
+  updateWord,
+  words
+}) => {
+  const Filter = filter;
   const classes = useStyles();
   const columns = COLUMNS[listType];
   const list = words[listType];
+  const filterIsApplied = tables[`${listType}_filterIsApplied`];
+  const filterSettings = tables[`${listType}_filterSettings`];
+  const pagerSettings = tables[`${listType}_pagerSettings`];
+  const { page, rowsPerPage, rowsPerPageOptions } = pagerSettings
   const fields = flatten(
     map(f => f.additionalProp ? [f.prop, f.additionalProp] : [f.prop], columns)
   );
 
   useEffect(() => {
-    getWords({ fields, limit: rowsPerPage, skip: page * rowsPerPage, listType });
+    const baseReqData = { fields, skip: page * rowsPerPage, limit: rowsPerPage, listType };
+    const req = filterIsApplied ? generateQuiz : getWords;
+    const reqData = filterIsApplied
+      ? { ...filterSettings, ...baseReqData }
+      : baseReqData;
+
+    req(reqData);
   }, [listType, page, rowsPerPage]);
 
   const tryUpdateWord = (value, prop, id) => {
@@ -94,8 +119,13 @@ const WordsList = ({ listType, getWords, updateWord, words }) => {
     return val;
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleChangePage = (_, newPage) => {
+    const data = {
+      ...pagerSettings,
+      page: newPage
+    };
+
+    setPagerSettings({ listType, data });
   };
 
   const onSort = (e, prop) => {
@@ -103,13 +133,38 @@ const WordsList = ({ listType, getWords, updateWord, words }) => {
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    const data = {
+      ...pagerSettings,
+      page: 0,
+      rowsPerPage: parseInt(event.target.value, 10)
+    };
+
+    setPagerSettings({ listType, data });
+  };
+
+  const onFilterApply = data => {
+    const reqData = {
+      ...data,
+      fields,
+      skip: page * rowsPerPage,
+      limit: rowsPerPage
+    };
+    setFilterSettings({ listType, data });
+    generateQuiz({ reqData, listType });
+  };
+
+  const onFilterClear = () => {
+    clearFilter({ listType });
+    getWords({ fields, skip: page * rowsPerPage, limit: rowsPerPage, listType });
   };
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
+        {
+          Filter &&
+          <Filter initialValues={filterSettings} onFilterApply={onFilterApply} onFilterClear={onFilterClear} />
+        }
         <TableContainer>
           <Table
             className={classes.table}
@@ -154,20 +209,29 @@ const WordsList = ({ listType, getWords, updateWord, words }) => {
 };
 
 WordsList.propTypes = {
-  listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
+  clearFilter: PropTypes.func.isRequired,
+  filter: PropTypes.any,
+  generateQuiz: PropTypes.func.isRequired,
   getWords: PropTypes.func.isRequired,
-  tabValue: PropTypes.number.isRequired,
+  listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
+  setFilterSettings: PropTypes.func.isRequired,
+  setPagerSettings: PropTypes.func.isRequired,
+  tables: PropTypes.object.isRequired,
   words: PropTypes.object,
   updateWord: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  tabValue: state.currentTab.tabValue,
+  tables: state.tables,
   words: state.words
 });
 
 const mapDispatchToProps = dispatch => ({
+  clearFilter: payload => dispatch({ type: CLEAR_TABLE_FILTER_SETTINGS, payload }),
+  generateQuiz: payload => dispatch({ type: GENERATE_QUIZ_REQUEST, payload }),
   getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload }),
+  setFilterSettings: payload => dispatch({ type: SET_TABLE_FILTER_SETTINGS, payload }),
+  setPagerSettings: payload => dispatch({ type: SET_TABLE_PAGER_SETTINGS, payload }),
   updateWord: payload => dispatch({ type: UPDATE_WORD_REQUEST, payload })
 });
 

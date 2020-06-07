@@ -1,21 +1,24 @@
 import { findIndex } from 'ramda';
 
+import { CHECK, LEARN } from '../../constants/listTypes.constants';
 import ActionTypes from '../actions';
 
 const {
   FETCH_WORDS_SUCCESS,
+  GENERATE_QUIZ_SUCCESS,
   UPDATE_WORD_SUCCESS
 } = ActionTypes;
 
 const initialState = {
-  checkList: null,
-  learnList: null,
+  [`${CHECK}`]: null,
+  [`${LEARN}`]: null,
   item: null
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case FETCH_WORDS_SUCCESS: {
+    case FETCH_WORDS_SUCCESS:
+    case GENERATE_QUIZ_SUCCESS: {
       const { data, listType } = action.payload;
 
       return {

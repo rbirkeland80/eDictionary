@@ -8,6 +8,9 @@ const {
   FETCH_WORDS_FAILURE,
   FETCH_WORDS_REQUEST,
   FETCH_WORDS_SUCCESS,
+  GENERATE_QUIZ_FAILURE,
+  GENERATE_QUIZ_REQUEST,
+  GENERATE_QUIZ_SUCCESS,
   SAVE_WORDS_FAILURE,
   SAVE_WORDS_REQUEST,
   SAVE_WORDS_SUCCESS,
@@ -31,6 +34,17 @@ export function* fetchWords(action) {
     yield put({ type: FETCH_WORDS_SUCCESS,  payload: { data, listType } });
   } catch (error) {
     yield put({ type: FETCH_WORDS_FAILURE, payload: error.message });
+  }
+}
+
+export function* generateQuiz(action) {
+  try {
+    const { listType, reqData } = action.payload;
+    const { data } = yield call(axios.post, `${url}/quiz`, reqData);
+
+    yield put({ type: GENERATE_QUIZ_SUCCESS,  payload: { data, listType } });
+  } catch (error) {
+    yield put({ type: GENERATE_QUIZ_FAILURE, payload: error.message });
   }
 }
 
@@ -71,6 +85,7 @@ function* updateWord(action) {
 
 export default [
   takeLatest(FETCH_WORDS_REQUEST, fetchWords),
+  takeLatest(GENERATE_QUIZ_REQUEST, generateQuiz),
   takeLatest(SAVE_WORDS_REQUEST, saveWords),
   takeLatest(UPDATE_WORD_REQUEST, updateWord),
 ];
