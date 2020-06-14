@@ -112,6 +112,7 @@ const WordsList = ({
   const columns = COLUMNS[listType];
   const list = words[listType];
   const filterIsApplied = tables[`${listType}_filterIsApplied`];
+  const hiddenColumns = tables[`${listType}_hiddenColumns`];
   const filterSettings = tables[`${listType}_filterSettings`];
   const pagerSettings = tables[`${listType}_pagerSettings`];
   const { sortDirection, sortProp } = tables[`${listType}_sortSettings`];
@@ -235,6 +236,7 @@ const WordsList = ({
               order={sortDirection}
               orderBy={sortProp}
               onRequestSort={onSort}
+              listType={listType}
             />
 
             {
@@ -246,7 +248,9 @@ const WordsList = ({
                       {
                         columns.map(col => (
                           <TableCell key={`cell-${col.label}-${row[col.prop]}`}>
-                            {formatCellData(col, row)}
+                            <span className={`${hiddenColumns.includes(col.prop) ? "invisible" : ""}`}>
+                              {formatCellData(col, row)}
+                            </span>
                           </TableCell>
                         ))
                       }

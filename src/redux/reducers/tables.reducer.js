@@ -4,10 +4,11 @@ import { CHECK, LEARN } from '../../constants/listTypes.constants';
 const {
   CLEAR_TABLE_FILTER_SETTINGS,
   SET_TABLE_FILTER_SETTINGS,
+  SET_TABLE_HIDDEN_COLUMNS,
   SET_TABLE_PAGER_SETTINGS,
   SET_TABLE_SORT_SETTINGS
 } = ActionTypes;
-const rowsPerPageOptions = [5, 10, 15];
+const rowsPerPageOptions = [25, 50, 75];
 const defaultFilterSettings = {
   includeToVerify: true,
   maxCount: null,
@@ -26,8 +27,10 @@ const defaultSortSettings = {
 const initialState = {
   [`${CHECK}_filterIsApplied`]: false,
   [`${CHECK}_filterSettings`]: defaultFilterSettings,
+  [`${CHECK}_hiddenColumns`]: [],
   [`${CHECK}_pagerSettings`]: defaultPagerSettings,
   [`${CHECK}_sortSettings`]: defaultSortSettings,
+  [`${LEARN}_hiddenColumns`]: [],
   [`${LEARN}_pagerSettings`]: defaultPagerSettings,
   [`${LEARN}_sortSettings`]: defaultSortSettings
 };
@@ -51,6 +54,15 @@ export default (state = initialState, action) => {
         ...state,
         [`${listType}_filterIsApplied`]: true,
         [`${listType}_filterSettings`]: data
+      };
+    }
+
+    case SET_TABLE_HIDDEN_COLUMNS: {
+      const { listType, data } = action.payload;
+
+      return {
+        ...state,
+        [`${listType}_hiddenColumns`]: data
       };
     }
 
