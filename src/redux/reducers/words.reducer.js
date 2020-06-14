@@ -1,9 +1,10 @@
-import { clone, findIndex } from 'ramda';
+import { clone, findIndex, remove } from 'ramda';
 
 import { CHECK, LEARN } from '../../constants/listTypes.constants';
 import ActionTypes from '../actions';
 
 const {
+  DELETE_WORD_SUCCESS,
   FETCH_WORDS_SUCCESS,
   GENERATE_QUIZ_SUCCESS,
   UPDATE_WORD_SUCCESS,
@@ -18,6 +19,22 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case DELETE_WORD_SUCCESS: {
+      const { data, listType } = action.payload;
+      const oldList = [ ...state[listType].list ]
+      const index = findIndex(w => w._id === data._id, oldList);
+      const newList = remove(index, 1, oldList);
+
+      return {
+        ...state,
+        [listType]: {
+          ...state[listType],
+          list: newList,
+          count: state[listType].count - 1
+        }
+      };
+    }
+
     case FETCH_WORDS_SUCCESS:
     case GENERATE_QUIZ_SUCCESS: {
       const { data, listType } = action.payload;

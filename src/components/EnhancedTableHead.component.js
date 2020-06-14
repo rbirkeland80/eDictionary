@@ -5,7 +5,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
-const EnhancedTableHead = ({ classes, columns, order, orderBy, onRequestSort }) => (
+const EnhancedTableHead = ({ actions, classes, columns, order, orderBy, onRequestSort }) => (
   <TableHead>
     <TableRow>
       {columns.map((column) => (
@@ -27,13 +27,18 @@ const EnhancedTableHead = ({ classes, columns, order, orderBy, onRequestSort }) 
           </TableSortLabel>
         </TableCell>
       ))}
+      {
+        (actions && actions.length) &&
+        <TableCell key="actions">&nbsp;</TableCell>
+      }
     </TableRow>
   </TableHead>
 );
 
 EnhancedTableHead.propTypes = {
+  actions: PropTypes.arrayOf(PropTypes.shape()),
   classes: PropTypes.object.isRequired,
-  columns: PropTypes.arrayOf(PropTypes.shape()).isRequired, // TODO shape columns
+  columns: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']),
   orderBy: PropTypes.string

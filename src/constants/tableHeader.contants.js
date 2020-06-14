@@ -1,3 +1,9 @@
+import { CHECK, LEARN } from './listTypes.constants';
+
+export const ACTION_DELETE = {
+  type: 'delete'
+};
+
 export const ADDED = {
   label:'Added',
   prop: 'createdAt',
@@ -44,7 +50,11 @@ export const VERIFIED_AT = {
   type: 'date'
 };
 
+export const ACTIONS = {
+  [`${LEARN}`]: [ ACTION_DELETE ]
+};
+
 export const COLUMNS = {
-  check: [ WORD, TRANSLATION, VERIFIED_AT, E_TO_U, U_TO_E, TO_CHECK_NEXT_TIME ],
-  learn: [ WORD, TRANSLATION, DESCRIPTION, ADDED ]
+  [`${CHECK}`]: [ WORD, TRANSLATION, VERIFIED_AT, E_TO_U, U_TO_E, TO_CHECK_NEXT_TIME ],
+  [`${LEARN}`]: [ WORD, TRANSLATION, DESCRIPTION, ADDED ]
 };
