@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { makeStyles } from '@material-ui/core/styles';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
@@ -13,15 +14,29 @@ import { CHECK, LEARN } from '../../constants/listTypes.constants';
 
 const { SET_TABLE_HIDDEN_COLUMNS, SET_TABLE_SORT_SETTINGS } = ActionTypes;
 
+const useStyles = makeStyles(() => ({
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
+}));
+
 const EnhancedTableHead = ({
   actions,
-  classes,
   listType,
   columns,
   setHiddenColumns,
   setSortSettings,
   tables
 }) => {
+  const classes = useStyles();
   const columnsHidden = tables[`${listType}_hiddenColumns`];
   const { sortDirection, sortProp } = tables[`${listType}_sortSettings`];
 
@@ -80,7 +95,6 @@ const EnhancedTableHead = ({
 
 EnhancedTableHead.propTypes = {
   actions: PropTypes.arrayOf(PropTypes.shape()),
-  classes: PropTypes.object.isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
   setHiddenColumns: PropTypes.func.isRequired,

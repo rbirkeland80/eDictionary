@@ -41,18 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     minWidth: 750,
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
-  },
+  }
 }));
 
 const parseValue = (type, prop, row, cb) => {
@@ -154,7 +143,7 @@ const WordsList = ({
         }
         <TableContainer>
           <Table className={classes.table} aria-labelledby="tableTitle" size="small">
-            <EnhancedTableHead classes={classes} actions={actions} columns={columns} listType={listType} />
+            <EnhancedTableHead actions={actions} columns={columns} listType={listType} />
 
             {
               (list && list.list && !!list.list.length) &&
