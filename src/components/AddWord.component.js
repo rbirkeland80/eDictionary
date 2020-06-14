@@ -22,7 +22,7 @@ const AddWord = ({
           <div key={index} className="d-flex justify-content-between align-items-end mb-2">
             <Field
               required
-              render={({ input }) => <TextField label="Word" onChange={evt => input.onChange(evt.target.value)} />}
+              render={({ input }) => <TextField label="Word" onChange={evt => input.onChange(evt.target.value)} autoFocus />}
               name={`${word}.word`}
             />
 

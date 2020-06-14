@@ -10,8 +10,8 @@ import ActionTypes from '../redux/actions';
 import { CHECK, LEARN } from '../constants/listTypes.constants';
 import { ADD_WORD_VALIDATION_ERROR } from '../constants/modals.constants';
 import TabPanel from '../components/TabPanel.component';
-import AddWordsValidationDialog from '../components/AddWordsValidationDialog.component';
 import CheckFilter from '../components/CheckFilter.component';
+import AddWordsValidationDialog from '../dialogs/AddWordsValidationDialog.component';
 import AddWords from './AddWords.container';
 import WordsList from './WordsList.container';
 
@@ -67,11 +67,14 @@ const Dictionary = ({
         <AddWords />
       </TabPanel>
 
-      <AddWordsValidationDialog
-        errors={addWordsValidationErrors}
-        modalOpened={modalOpened}
-        handleClose={() => closeModal(ADD_WORD_VALIDATION_ERROR, true)}
-      />
+      {
+        modalOpened &&
+        <AddWordsValidationDialog
+          errors={addWordsValidationErrors}
+          modalOpened={modalOpened}
+          handleClose={() => closeModal(ADD_WORD_VALIDATION_ERROR, true)}
+        />
+      }
     </div>
   );
 };

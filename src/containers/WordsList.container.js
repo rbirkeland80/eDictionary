@@ -22,7 +22,7 @@ import { CHECK, LEARN } from '../constants/listTypes.constants';
 import { COLUMNS } from '../constants/tableHeader.contants';
 import { CONFIRM_VALIDATE_QUIZ } from '../constants/modals.constants';
 import EnhancedTableHead from '../components/EnhancedTableHead.component';
-import ConfirmVerifyQuizDialog from '../components/ConfirmVerifyQuizDialog.component';
+import ConfirmVerifyQuizDialog from '../dialogs/ConfirmVerifyQuizDialog.component';
 import ActionTypes from '../redux/actions';
 
 const {
@@ -207,7 +207,13 @@ const WordsList = ({
         }
         <TableContainer>
           <Table className={classes.table} aria-labelledby="tableTitle">
-            <EnhancedTableHead classes={classes} columns={columns} order={sortDirection} orderBy={sortProp} onRequestSort={onSort} />
+            <EnhancedTableHead
+              classes={classes}
+              columns={columns}
+              order={sortDirection}
+              orderBy={sortProp}
+              onRequestSort={onSort}
+            />
 
             {
               (list && list.list && !!list.list.length) &&
@@ -240,7 +246,10 @@ const WordsList = ({
         />
       </Paper>
 
-      <ConfirmVerifyQuizDialog modalOpened={confirmModalOpened} handleClose={confirmValidateQuiz} />
+      {
+        confirmModalOpened &&
+        <ConfirmVerifyQuizDialog modalOpened={confirmModalOpened} handleClose={confirmValidateQuiz} />
+      }
     </div>
   );
 };
