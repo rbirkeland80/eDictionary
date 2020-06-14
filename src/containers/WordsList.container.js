@@ -17,18 +17,22 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
+import Icon from '@material-ui/core/Icon';
 
 import { CHECK, LEARN } from '../constants/listTypes.constants';
-import { COLUMNS } from '../constants/tableHeader.contants';
-import { CONFIRM_VALIDATE_QUIZ } from '../constants/modals.constants';
+import { ACTION_DELETE, ACTIONS, COLUMNS } from '../constants/tableHeader.contants';
+import { CONFIRM_DELETE_WORD, CONFIRM_VALIDATE_QUIZ } from '../constants/modals.constants';
 import EnhancedTableHead from '../components/EnhancedTableHead.component';
+import ConfirmDeleteWordDialog from '../dialogs/ConfirmDeleteWordDialog.container';
 import ConfirmVerifyQuizDialog from '../dialogs/ConfirmVerifyQuizDialog.component';
 import ActionTypes from '../redux/actions';
 
 const {
   CLEAR_TABLE_FILTER_SETTINGS,
+  DELETE_WORD_REQUEST,
   FETCH_WORDS_REQUEST,
   GENERATE_QUIZ_REQUEST,
+  SET_MODAL_DATA,
   SET_MODAL_STATE,
   SET_TABLE_FILTER_SETTINGS,
   SET_TABLE_PAGER_SETTINGS,
@@ -85,22 +89,26 @@ const parseValue = (type, prop, row, cb) => {
 
 const WordsList = ({
   clearFilter,
-  confirmModalOpened,
+  deleteModalOpened,
+  deleteWord,
   filter,
   generateQuiz,
   getWords,
   listType,
   setFilterSettings,
+  setModalData,
   setModalState,
   setPagerSettings,
   setSortSettings,
   tables,
   updateWord,
+  verifyModalOpened,
   verifyQuiz,
   words
 }) => {
   const Filter = filter;
   const classes = useStyles();
+  const actions = ACTIONS[listType];
   const columns = COLUMNS[listType];
   const list = words[listType];
   const filterIsApplied = tables[`${listType}_filterIsApplied`];
@@ -121,6 +129,12 @@ const WordsList = ({
 
     req(reqData);
   }, [listType, page, rowsPerPage, sortDirection, sortProp]);
+
+  const confirmDeleteWord = (id) => {
+    deleteWord({ id, listType });
+    setModalData(null);
+    setModalState(CONFIRM_DELETE_WORD, false);
+  };
 
   const confirmValidateQuiz = () => {
     setModalState(CONFIRM_VALIDATE_QUIZ, false);
@@ -147,6 +161,13 @@ const WordsList = ({
     };
 
     setPagerSettings({ listType, data });
+  };
+
+  const onActionClick = (type, id, word) => {
+    if (type === ACTION_DELETE.type) {
+      setModalData({ id, word });
+      setModalState(CONFIRM_DELETE_WORD, true);
+    }
   };
 
   const onSort = (sortProp) => {
@@ -209,6 +230,7 @@ const WordsList = ({
           <Table className={classes.table} aria-labelledby="tableTitle">
             <EnhancedTableHead
               classes={classes}
+              actions={actions}
               columns={columns}
               order={sortDirection}
               orderBy={sortProp}
@@ -227,6 +249,22 @@ const WordsList = ({
                             {formatCellData(col, row)}
                           </TableCell>
                         ))
+                      }
+                      {
+                        (actions && actions.length) &&
+                        <TableCell key="actions">
+                          {
+                            actions.map(action => (
+                              <Icon
+                                key={action.type}
+                                color="secondary"
+                                onClick={() => onActionClick(action.type, row._id, row.word)}
+                              >
+                                {action.type}
+                              </Icon>
+                            ))
+                          }
+                        </TableCell>
                       }
                     </TableRow>
                   ))
@@ -247,8 +285,13 @@ const WordsList = ({
       </Paper>
 
       {
-        confirmModalOpened &&
-        <ConfirmVerifyQuizDialog modalOpened={confirmModalOpened} handleClose={confirmValidateQuiz} />
+        verifyModalOpened &&
+        <ConfirmVerifyQuizDialog modalOpened={verifyModalOpened} handleClose={confirmValidateQuiz} />
+      }
+
+      {
+        deleteModalOpened &&
+        <ConfirmDeleteWordDialog modalOpened={deleteModalOpened} handleClose={confirmDeleteWord} />
       }
     </div>
   );
@@ -256,32 +299,38 @@ const WordsList = ({
 
 WordsList.propTypes = {
   clearFilter: PropTypes.func.isRequired,
-  confirmModalOpened: PropTypes.bool.isRequired,
+  deleteModalOpened: PropTypes.bool.isRequired,
+  deleteWord: PropTypes.func.isRequired,
   filter: PropTypes.any,
   generateQuiz: PropTypes.func.isRequired,
   getWords: PropTypes.func.isRequired,
   listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
   setFilterSettings: PropTypes.func.isRequired,
   setPagerSettings: PropTypes.func.isRequired,
+  setModalData: PropTypes.func.isRequired,
   setModalState: PropTypes.func.isRequired,
   setSortSettings: PropTypes.func.isRequired,
   tables: PropTypes.object.isRequired,
   words: PropTypes.object,
   updateWord: PropTypes.func.isRequired,
+  verifyModalOpened: PropTypes.bool.isRequired,
   verifyQuiz: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  confirmModalOpened: state.modals[CONFIRM_VALIDATE_QUIZ],
+  deleteModalOpened: state.modals[CONFIRM_DELETE_WORD],
   tables: state.tables,
+  verifyModalOpened: state.modals[CONFIRM_VALIDATE_QUIZ],
   words: state.words
 });
 
 const mapDispatchToProps = dispatch => ({
   clearFilter: payload => dispatch({ type: CLEAR_TABLE_FILTER_SETTINGS, payload }),
+  deleteWord: payload => dispatch({ type: DELETE_WORD_REQUEST, payload }),
   generateQuiz: payload => dispatch({ type: GENERATE_QUIZ_REQUEST, payload }),
   getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload }),
   setFilterSettings: payload => dispatch({ type: SET_TABLE_FILTER_SETTINGS, payload }),
+  setModalData: payload => dispatch({ type: SET_MODAL_DATA, payload }),
   setModalState: (type, value) => dispatch({ type: SET_MODAL_STATE, payload: { type, value } }),
   setPagerSettings: payload => dispatch({ type: SET_TABLE_PAGER_SETTINGS, payload }),
   setSortSettings: payload => dispatch({ type: SET_TABLE_SORT_SETTINGS, payload }),

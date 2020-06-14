@@ -5,6 +5,9 @@ import ActionTypes from '../actions';
 import { ADD_WORD_VALIDATION_ERROR } from '../../constants/modals.constants';
 
 const {
+  DELETE_WORD_FAILURE,
+  DELETE_WORD_REQUEST,
+  DELETE_WORD_SUCCESS,
   FETCH_WORDS_FAILURE,
   FETCH_WORDS_REQUEST,
   FETCH_WORDS_SUCCESS,
@@ -26,6 +29,17 @@ const {
 } = ActionTypes;
 
 const url = 'http://localhost:8080/api/words/';
+
+export function* deleteWord(action) {
+  try {
+    const { id, listType } = action.payload;
+    const { data } = yield call(axios.delete, `${url}/${id}`);
+
+    yield put({ type: DELETE_WORD_SUCCESS,  payload: { data, listType } });
+  } catch (error) {
+    yield put({ type: DELETE_WORD_FAILURE, payload: error.message });
+  }
+}
 
 export function* fetchWords(action) {
   try {
@@ -97,6 +111,7 @@ function* verifyQuiz(action) {
 }
 
 export default [
+  takeLatest(DELETE_WORD_REQUEST, deleteWord),
   takeLatest(FETCH_WORDS_REQUEST, fetchWords),
   takeLatest(GENERATE_QUIZ_REQUEST, generateQuiz),
   takeLatest(SAVE_WORDS_REQUEST, saveWords),
