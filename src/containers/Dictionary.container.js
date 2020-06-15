@@ -15,7 +15,7 @@ import AddWordsValidationDialog from '../dialogs/AddWordsValidationDialog.compon
 import AddWords from './AddWords.container';
 import WordsList from './wordList/index';
 
-const { SET_MODAL_DATA, SET_MODAL_STATE, SET_TAB_VALUE } = ActionTypes;
+const { GENERATE_QUIZ_REQUEST, SET_MODAL_DATA, SET_MODAL_STATE, SET_TAB_VALUE } = ActionTypes;
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 const Dictionary = ({
   addWordsValidationErrors,
   clearModalData,
+  generateQuiz,
   modalOpened,
   setModalState,
   setTabValue,
@@ -60,7 +61,7 @@ const Dictionary = ({
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
-        <WordsList listType={CHECK} filter={CheckFilter} />
+        <WordsList listType={CHECK} filter={CheckFilter} filterAction={generateQuiz} />
       </TabPanel>
 
       <TabPanel value={tabValue} index={2}>
@@ -82,6 +83,7 @@ const Dictionary = ({
 Dictionary.propTypes = {
   addWordsValidationErrors: PropTypes.arrayOf(PropTypes.object),
   clearModalData: PropTypes.func.isRequired,
+  generateQuiz: PropTypes.func.isRequired,
   modalOpened: PropTypes.bool.isRequired,
   setModalState: PropTypes.func.isRequired,
   setTabValue: PropTypes.func.isRequired,
@@ -96,6 +98,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   clearModalData: () => dispatch({ type: SET_MODAL_DATA, payload: null }),
+  generateQuiz: payload => dispatch({ type: GENERATE_QUIZ_REQUEST, payload }),
   setModalState: type => dispatch({ type: SET_MODAL_STATE, payload: { type, value: false } }),
   setTabValue: payload => dispatch({ type: SET_TAB_VALUE, payload })
 });
