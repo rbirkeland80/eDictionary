@@ -20,7 +20,6 @@ import EnhancedTableBody from './EnhancedTableBody.container';
 const {
   DELETE_WORD_REQUEST,
   FETCH_WORDS_REQUEST,
-  GENERATE_QUIZ_REQUEST,
   SET_MODAL_DATA,
   SET_MODAL_STATE
 } = ActionTypes;
@@ -42,7 +41,7 @@ const WordsList = ({
   deleteModalOpened,
   deleteWord,
   filter,
-  generateQuiz,
+  filterAction,
   getWords,
   listType,
   setModalData,
@@ -63,7 +62,7 @@ const WordsList = ({
 
   useEffect(() => {
     const baseReqData = { fields, skip: page * rowsPerPage, limit: rowsPerPage, sortDirection, sortProp };
-    const req = filterIsApplied ? generateQuiz : getWords;
+    const req = filterIsApplied ? filterAction : getWords;
     const reqData = filterIsApplied
       ? { reqData: { ...filterSettings, ...baseReqData }, listType }
       : { ...baseReqData, listType };
@@ -113,7 +112,7 @@ WordsList.propTypes = {
   deleteModalOpened: PropTypes.bool.isRequired,
   deleteWord: PropTypes.func.isRequired,
   filter: PropTypes.elementType,
-  generateQuiz: PropTypes.func.isRequired,
+  filterAction: PropTypes.func.isRequired,
   getWords: PropTypes.func.isRequired,
   listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
   setModalData: PropTypes.func.isRequired,
@@ -129,7 +128,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   deleteWord: payload => dispatch({ type: DELETE_WORD_REQUEST, payload }),
-  generateQuiz: payload => dispatch({ type: GENERATE_QUIZ_REQUEST, payload }),
   getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload }),
   setModalData: payload => dispatch({ type: SET_MODAL_DATA, payload }),
   setModalState: (type, value) => dispatch({ type: SET_MODAL_STATE, payload: { type, value } })
