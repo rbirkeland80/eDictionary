@@ -11,6 +11,7 @@ import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined'
 
 import ActionTypes from '../../redux/actions';
 import { CHECK, LEARN } from '../../constants/listTypes.constants';
+import { ACTIONS, COLUMNS } from '../../constants/tableHeader.constants';
 
 const { SET_TABLE_HIDDEN_COLUMNS, SET_TABLE_SORT_SETTINGS } = ActionTypes;
 
@@ -28,15 +29,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const EnhancedTableHead = ({
-  actions,
-  listType,
-  columns,
-  setHiddenColumns,
-  setSortSettings,
-  tables
-}) => {
+const EnhancedTableHead = ({ listType, setHiddenColumns, setSortSettings, tables }) => {
   const classes = useStyles();
+  const actions = ACTIONS[listType];
+  const columns = COLUMNS[listType];
   const columnsHidden = tables[`${listType}_hiddenColumns`];
   const { sortDirection, sortProp } = tables[`${listType}_sortSettings`];
 
@@ -94,8 +90,6 @@ const EnhancedTableHead = ({
 };
 
 EnhancedTableHead.propTypes = {
-  actions: PropTypes.arrayOf(PropTypes.shape()),
-  columns: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
   setHiddenColumns: PropTypes.func.isRequired,
   setSortSettings: PropTypes.func.isRequired,
