@@ -13,7 +13,7 @@ import TabPanel from '../components/TabPanel.component';
 import CheckFilter from '../components/CheckFilter.component';
 import AddWordsValidationDialog from '../dialogs/AddWordsValidationDialog.component';
 import AddWords from './AddWords.container';
-import WordsList from './WordsList.container';
+import WordsList from './wordList/index';
 
 const { SET_MODAL_DATA, SET_MODAL_STATE, SET_TAB_VALUE } = ActionTypes;
 const useStyles = makeStyles((theme) => ({
