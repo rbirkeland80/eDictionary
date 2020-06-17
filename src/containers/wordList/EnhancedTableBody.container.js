@@ -10,8 +10,8 @@ import Switch from '@material-ui/core/Switch';
 
 import ActionTypes from '../../redux/actions';
 import { CHECK, LEARN } from '../../constants/listTypes.constants';
-import { CONFIRM_DELETE_WORD } from '../../constants/modals.constants';
-import { ACTION_DELETE, ACTIONS, COLUMNS } from '../../constants/tableHeader.constants';
+import { CONFIRM_DELETE_WORD, EDIT_WORD } from '../../constants/modals.constants';
+import { ACTION_DELETE, ACTION_EDIT, ACTIONS, COLUMNS } from '../../constants/tableHeader.constants';
 
 const { SET_MODAL_DATA, SET_MODAL_STATE, UPDATE_WORD_REQUEST } = ActionTypes;
 
@@ -69,6 +69,11 @@ const EnhancedTableBody = ({
       setModalData({ id, word });
       setModalState(CONFIRM_DELETE_WORD, true);
     }
+
+    if (type === ACTION_EDIT.type) {
+      setModalData({ id, listType });
+      setModalState(EDIT_WORD, true);
+    }
   };
 
   return (
@@ -95,6 +100,7 @@ const EnhancedTableBody = ({
                       key={action.type}
                       color="secondary"
                       onClick={() => onActionClick(action.type, row._id, row.word)}
+                      className="mr-1"
                     >
                       {action.type}
                     </Icon>

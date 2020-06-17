@@ -7,6 +7,7 @@ const {
   DELETE_WORD_SUCCESS,
   FETCH_WORDS_SUCCESS,
   GENERATE_QUIZ_SUCCESS,
+  GET_WORD_SUCCESS,
   UPDATE_WORD_SUCCESS,
   VERIFY_QUIZ_SUCCESS
 } = ActionTypes;
@@ -42,6 +43,13 @@ export default (state = initialState, action) => {
       return {
         ...state,
         [listType]: data
+      };
+    }
+
+    case GET_WORD_SUCCESS: {
+      return {
+        ...state,
+        item: action.payload
       };
     }
 
