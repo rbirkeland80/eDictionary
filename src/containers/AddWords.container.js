@@ -35,13 +35,14 @@ const AddWords = ({ saveWords }) => {
         onSubmit={onSubmit}
         initialValues={initialValues}
         mutators={{ ...arrayMutators }}
-        render={({ handleSubmit, form, invalid, submitting, pristine }) => (
+        render={({ handleSubmit, form, invalid, submitting, pristine, values }) => (
           <form onSubmit={handleSubmit} className="w-50 mx-auto my-o">
             <FieldArray
               component={AddWord}
               name="words"
               tryAddWord={tryAddWord}
               tryDeleteWord={tryDeleteWord}
+              values={values}
             />
 
             <div className="buttons text-right">
