@@ -3,55 +3,73 @@ import PropTypes from 'prop-types';
 import { Field } from 'react-final-form';
 import TextField from '@material-ui/core/TextField';
 import DeleteIcon from '@material-ui/icons/Delete';
-import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const AddWord = ({
-  fields,
-  tryAddWord,
-  tryDeleteWord
-}) => {
-  const expandWord = () => {
-    console.log('expand option below or in dialog')
-  };
+import AdditionalFields from './AdditionalFields.component';
 
-  return (
-    <>
-      {
-        fields.map((word, index) => (
-          <div key={index} className="d-flex justify-content-between align-items-end mb-2">
-            <Field
-              required
-              render={({ input }) => <TextField label="Word" onChange={evt => input.onChange(evt.target.value)} autoFocus />}
-              name={`${word}.word`}
-            />
+const AddWord = ({ fields, tryAddWord, tryDeleteWord, values }) => (
+  <>
+    {
+      fields.map((word, index) => (
+        <ExpansionPanel key={index} className="mb-2">
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Field required name={`${word}.word`}>
+              {
+                props => (
+                  <TextField
+                    required
+                    autoFocus
+                    className="w-45 mr-3"
+                    label="Word"
+                    name={props.input.name}
+                    value={props.input.value}
+                    onChange={props.input.onChange}
+                    onClick={(event) => event.stopPropagation()}
+                    onFocus={(event) => event.stopPropagation()}
+                  />
+                )
+              }
+            </Field>
 
-            <Field
-              render={({ input }) => <TextField label="Plural" onChange={evt => input.onChange(evt.target.value)} />}
-              name={`${word}.plural`}
-            />
+            <Field name={`${word}.translation`}>
+              {
+                props => (
+                  <TextField
+                    className="w-45 mr-3"
+                    label="Translation"
+                    name={props.input.name}
+                    value={props.input.value}
+                    onChange={props.input.onChange}
+                    onClick={(event) => event.stopPropagation()}
+                    onFocus={(event) => event.stopPropagation()}
+                  />
+                )
+              }
+            </Field>
 
-            <Field
-              render={({ input }) => <TextField label="Translation" onChange={evt => input.onChange(evt.target.value)} />}
-              name={`${word}.translation`}
-            />
+            <DeleteIcon className="d-flex align-self-end" color="error" onClick={() => tryDeleteWord(fields, index)} />
+          </ExpansionPanelSummary>
 
-            <MoreHoriz color="secondary" onClick={expandWord} />
+          <ExpansionPanelDetails className="flex-column">
+            <AdditionalFields prefix={`${word}.`} values={values.words[index]} />
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      ))
+    }
 
-            <DeleteIcon color="error" onClick={() => tryDeleteWord(fields, index)} />
-          </div>
-        ))
-      }
-
-      <AddCircleOutlineIcon className="my-3" color="primary" onClick={() => tryAddWord(fields)} />
-    </>
-  );
-};
+    <AddCircleOutlineIcon className="my-3" color="primary" onClick={() => tryAddWord(fields)} />
+  </>
+);
 
 AddWord.propTypes = {
   fields: PropTypes.object,
   tryAddWord: PropTypes.func.isRequired,
-  tryDeleteWord: PropTypes.func.isRequired
+  tryDeleteWord: PropTypes.func.isRequired,
+  values: PropTypes.object
 };
 
 export default AddWord;

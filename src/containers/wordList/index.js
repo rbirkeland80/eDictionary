@@ -9,8 +9,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 
 import { CHECK, LEARN } from '../../constants/listTypes.constants';
 import { COLUMNS } from '../../constants/tableHeader.constants';
-import { CONFIRM_DELETE_WORD } from '../../constants/modals.constants';
+import { CONFIRM_DELETE_WORD, EDIT_WORD } from '../../constants/modals.constants';
 import ConfirmDeleteWordDialog from '../../dialogs/ConfirmDeleteWordDialog.container';
+import EditWordDialog from '../../dialogs/EditWordDialog.container';
 import ActionTypes from '../../redux/actions';
 import EnhancedTableHead from './EnhancedTableHead.container';
 import FilterWrapper from './FilterWrapper.container';
@@ -38,12 +39,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const WordsList = ({
-  deleteModalOpened,
   deleteWord,
   filter,
   filterAction,
   getWords,
   listType,
+  modalsOpened,
   setModalData,
   setModalState,
   tables,
@@ -70,10 +71,14 @@ const WordsList = ({
     req(reqData);
   }, [listType, page, rowsPerPage, sortDirection, sortProp]);
 
+  const closeDialog = (type) => {
+    setModalData(null);
+    setModalState(type, false);
+  };
+
   const confirmDeleteWord = (id) => {
     deleteWord({ id, listType });
-    setModalData(null);
-    setModalState(CONFIRM_DELETE_WORD, false);
+    closeDialog(CONFIRM_DELETE_WORD)
   };
 
   return (
@@ -101,27 +106,32 @@ const WordsList = ({
       </Paper>
 
       {
-        deleteModalOpened &&
-        <ConfirmDeleteWordDialog modalOpened={deleteModalOpened} handleClose={confirmDeleteWord} />
+        modalsOpened[CONFIRM_DELETE_WORD] &&
+        <ConfirmDeleteWordDialog modalOpened={modalsOpened[CONFIRM_DELETE_WORD]} handleClose={confirmDeleteWord} />
+      }
+
+      {
+        modalsOpened[EDIT_WORD] &&
+        <EditWordDialog modalOpened={modalsOpened[EDIT_WORD]} handleClose={() => closeDialog(EDIT_WORD)} />
       }
     </div>
   );
 };
 
 WordsList.propTypes = {
-  deleteModalOpened: PropTypes.bool.isRequired,
   deleteWord: PropTypes.func.isRequired,
   filter: PropTypes.elementType,
-  filterAction: PropTypes.func.isRequired,
+  filterAction: PropTypes.func,
   getWords: PropTypes.func.isRequired,
   listType: PropTypes.oneOf([CHECK, LEARN]).isRequired,
+  modalsOpened: PropTypes.object,
   setModalData: PropTypes.func.isRequired,
   setModalState: PropTypes.func.isRequired,
   tables: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  deleteModalOpened: state.modals[CONFIRM_DELETE_WORD],
+  modalsOpened: state.modals,
   tables: state.tables,
   words: state.words
 });

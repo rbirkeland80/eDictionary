@@ -4,6 +4,10 @@ export const ACTION_DELETE = {
   type: 'delete'
 };
 
+export const ACTION_EDIT = {
+  type: 'edit'
+};
+
 export const ADDED = {
   label:'Added',
   prop: 'createdAt',
@@ -51,7 +55,7 @@ export const VERIFIED_AT = {
 };
 
 export const ACTIONS = {
-  [`${LEARN}`]: [ ACTION_DELETE ]
+  [`${LEARN}`]: [ ACTION_EDIT, ACTION_DELETE ]
 };
 
 export const COLUMNS = {
