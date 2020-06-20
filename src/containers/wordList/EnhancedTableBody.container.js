@@ -56,7 +56,9 @@ const EnhancedTableBody = ({
 
   const formatCellData = (col, row) => {
     const prop = parseValue(col.type, col.prop, row, tryUpdateWord);
-    const additionalProp = parseValue(col.additionalPropType, col.additionalProp, row);
+    const additionalProp = (col.additionalPropType && col.additionalProp)
+      ? parseValue(col.additionalPropType, col.additionalProp, row)
+      : '';
     const val = additionalProp && typeof prop === 'string'
       ? `${prop} (pl: ${additionalProp})`
       : prop;
@@ -80,11 +82,12 @@ const EnhancedTableBody = ({
     (list && list.length) && 
     <TableBody>
       {
-        list.map(row => (
+        list.map((row, i) => (
           <TableRow tabIndex={-1} key={`row-${row.word}`}>
+            <TableCell size="small">{i + 1}</TableCell>
             {
               columns.map(col => (
-                <TableCell key={`cell-${col.label}-${row[col.prop]}`}>
+                <TableCell key={`cell-${col.label}-${row[col.prop]}`} size={col.size || 'medium'}>
                   <span className={`${hiddenColumns.includes(col.prop) ? "invisible" : ""}`}>
                     {formatCellData(col, row)}
                   </span>
