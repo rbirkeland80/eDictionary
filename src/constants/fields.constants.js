@@ -23,6 +23,16 @@ export const NOUN = {
   value: 'n'
 };
 
+const NUM = {
+  label: 'Numeral',
+  value: 'num'
+};
+
+const PH = {
+  label: 'Phrase',
+  value: 'ph'
+};
+
 const PH_V = {
   label: 'Phrasal verb',
   value: 'ph v'
@@ -44,13 +54,15 @@ export const VERB = {
 };
 
 export const PART_OF_SPEECH_OPTIONS = [
+  NOUN,
+  VERB,
   ADJ,
   ADV,
+  PH,
+  PH_V,
+  NUM,
   CONJ,
   INTERJ,
-  NOUN,
-  PH_V,
   PREP,
-  PRON,
-  VERB
+  PRON
 ]

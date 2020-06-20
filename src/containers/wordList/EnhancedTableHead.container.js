@@ -50,15 +50,25 @@ const EnhancedTableHead = ({ listType, setHiddenColumns, setSortSettings, tables
   return (
     <TableHead>
       <TableRow>
+        <TableCell size="small"></TableCell>
         {columns.map((column) => (
           <TableCell
             key={column.prop}
             sortDirection={sortProp === column.prop ? sortDirection : false}
+            size={column.size || 'medium'}
           >
             {
               columnsHidden.includes(column.prop)
-                ? <VisibilityOffOutlinedIcon className="mr-1" color="primary" onClick={() => onToggleShowHide(column.prop)} />
-                : < VisibilityOutlinedIcon className="mr-1" color="primary" onClick={() => onToggleShowHide(column.prop)} />
+                ? <VisibilityOffOutlinedIcon
+                    className={`mr-1 ${column.type === 'bool' ? 'd-none' : ''}`}
+                    color="primary"
+                    onClick={() => onToggleShowHide(column.prop)}
+                  />
+                : < VisibilityOutlinedIcon
+                    className={`mr-1 ${column.type === 'bool' ? 'd-none' : ''}`}
+                    color="primary"
+                    onClick={() => onToggleShowHide(column.prop)}
+                  />
             }
 
             <TableSortLabel
@@ -82,7 +92,7 @@ const EnhancedTableHead = ({ listType, setHiddenColumns, setSortSettings, tables
         ))}
         {
           (actions && actions.length) &&
-          <TableCell key="actions">&nbsp;</TableCell>
+          <TableCell key="actions" size={actions.size || 'medium'}>&nbsp;</TableCell>
         }
       </TableRow>
     </TableHead>

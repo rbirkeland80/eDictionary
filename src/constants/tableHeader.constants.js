@@ -22,12 +22,14 @@ export const DESCRIPTION = {
 export const E_TO_U = {
   label: 'Eng to Ukr',
   prop: 'canEToU',
+  size: 'small',
   type: 'bool'
 };
 
 export const TO_CHECK_NEXT_TIME = {
-  label: 'Check next time',
+  label: 'Check again',
   prop: 'toVerifyNextTime',
+  size: 'small',
   type: 'bool'
 };
 
@@ -45,6 +47,7 @@ export const WORD = {
 export const U_TO_E = {
   label: 'Ukr to Eng',
   prop: 'canUToE',
+  size: 'small',
   type: 'bool'
 };
 
@@ -55,7 +58,8 @@ export const VERIFIED_AT = {
 };
 
 export const ACTIONS = {
-  [`${LEARN}`]: [ ACTION_EDIT, ACTION_DELETE ]
+  [`${LEARN}`]: [ ACTION_EDIT, ACTION_DELETE ],
+  size: 'small'
 };
 
 export const COLUMNS = {

@@ -5,3 +5,7 @@
 .w-45 {
   width: 45%;
 }
+
+.MuiTableCell-sizeSmall {
+  max-width: 55px;
+}
