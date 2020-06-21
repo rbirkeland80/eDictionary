@@ -48,6 +48,7 @@ const EnhancedTableBody = ({
   const actions = ACTIONS[listType];
   const columns = COLUMNS[listType];
   const hiddenColumns = tables[`${listType}_hiddenColumns`];
+  const { page, rowsPerPage } = tables[`${listType}_pagerSettings`];
   const list = words[listType] && words[listType].list;
 
   const tryUpdateWord = (value, prop, id) => {
@@ -84,7 +85,7 @@ const EnhancedTableBody = ({
       {
         list.map((row, i) => (
           <TableRow tabIndex={-1} key={`row-${row.word}`}>
-            <TableCell size="small">{i + 1}</TableCell>
+            <TableCell size="small">{(i + 1) + (page * rowsPerPage)}</TableCell>
             {
               columns.map(col => (
                 <TableCell key={`cell-${col.label}-${row[col.prop]}`} size={col.size || 'medium'}>
