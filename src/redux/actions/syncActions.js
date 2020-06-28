@@ -1,5 +1,6 @@
 export default [
   'CLEAR_TABLE_FILTER_SETTINGS',
+  'CLEAR_USER',
   'SET_MODAL_DATA',
   'SET_MODAL_STATE',
   'SET_TAB_VALUE',

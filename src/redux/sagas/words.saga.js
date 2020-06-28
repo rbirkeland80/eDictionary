@@ -3,8 +3,10 @@ import axios from 'axios';
 
 import ActionTypes from '../actions';
 import { ADD_WORD_VALIDATION_ERROR } from '../../constants/modals.constants';
+import { TOKEN_KEY } from '../../constants/localStorageKeys.constants';
 
 const {
+  CLEAR_USER,
   DELETE_WORD_FAILURE,
   DELETE_WORD_REQUEST,
   DELETE_WORD_SUCCESS,
@@ -33,6 +35,25 @@ const {
 
 const url = 'http://localhost:8080/api/words/';
 
+axios.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem(TOKEN_KEY);
+
+    if (token) {
+        config.headers['Authorization'] = 'Bearer ' + token;
+    }
+
+    return config;
+  },
+  error => {
+    Promise.reject(error)
+  }
+);
+
+function getStatusCode(error) {
+  return error && error.response && error.response.status;
+}
+
 export function* deleteWord(action) {
   try {
     const { id, listType } = action.payload;
@@ -53,7 +74,16 @@ export function* fetchWords(action) {
 
     yield put({ type: FETCH_WORDS_SUCCESS,  payload: { data, listType } });
   } catch (error) {
-    yield put({ type: FETCH_WORDS_FAILURE, payload: error.message });
+    const code = getStatusCode(error);
+
+    if (code !== 401) {
+      yield put({ type: FETCH_WORDS_FAILURE, payload: error.message });
+
+      return;
+    }
+
+    yield put({ type: SET_TAB_VALUE, payload: 3 });
+    yield put({ type: CLEAR_USER });
   }
 }
 
@@ -64,7 +94,16 @@ export function* generateQuiz(action) {
 
     yield put({ type: GENERATE_QUIZ_SUCCESS,  payload: { data, listType } });
   } catch (error) {
-    yield put({ type: GENERATE_QUIZ_FAILURE, payload: error.message });
+    const code = getStatusCode(error);
+
+    if (code !== 401) {
+      yield put({ type: GENERATE_QUIZ_FAILURE, payload: error.message });
+
+      return;
+    }
+
+    yield put({ type: SET_TAB_VALUE, payload: 3 });
+    yield put({ type: CLEAR_USER });
   }
 }
 
@@ -75,7 +114,16 @@ export function* getWord(action) {
 
     yield put({ type: GET_WORD_SUCCESS,  payload: data });
   } catch (error) {
-    yield put({ type: GET_WORD_FAILURE, payload: error.message });
+    const code = getStatusCode(error);
+
+    if (code !== 401) {
+      yield put({ type: GET_WORD_FAILURE, payload: error.message });
+
+      return;
+    }
+
+    yield put({ type: SET_TAB_VALUE, payload: 3 });
+    yield put({ type: CLEAR_USER });
   }
 }
 
@@ -99,7 +147,16 @@ function* saveWords(action) {
       });
     }
   } catch (error) {
-    yield put({ type: SAVE_WORDS_FAILURE, payload: error.message });
+    const code = getStatusCode(error);
+
+    if (code !== 401) {
+      yield put({ type: SAVE_WORDS_FAILURE, payload: error.message });
+
+      return;
+    }
+
+    yield put({ type: SET_TAB_VALUE, payload: 3 });
+    yield put({ type: CLEAR_USER });
   }
 }
 
@@ -110,7 +167,16 @@ function* updateWord(action) {
 
     yield put({ type: UPDATE_WORD_SUCCESS, payload: { data: resp.data, listType } });
   } catch (error) {
-    yield put({ type: UPDATE_WORD_FAILURE, payload: error.message });
+    const code = getStatusCode(error);
+
+    if (code !== 401) {
+      yield put({ type: UPDATE_WORD_FAILURE, payload: error.message });
+
+      return;
+    }
+
+    yield put({ type: SET_TAB_VALUE, payload: 3 });
+    yield put({ type: CLEAR_USER });
   }
 }
 
@@ -120,7 +186,16 @@ function* verifyQuiz(action) {
 
     yield put({ type: VERIFY_QUIZ_SUCCESS });
   } catch (error) {
-    yield put({ type: VERIFY_QUIZ_FAILURE, payload: error.message });
+    const code = getStatusCode(error);
+
+    if (code !== 401) {
+      yield put({ type: VERIFY_QUIZ_FAILURE, payload: error.message });
+
+      return;
+    }
+
+    yield put({ type: SET_TAB_VALUE, payload: 3 });
+    yield put({ type: CLEAR_USER });
   }
 }
 
