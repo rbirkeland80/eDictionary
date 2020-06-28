@@ -9,10 +9,13 @@ import Tab from '@material-ui/core/Tab';
 import ActionTypes from '../redux/actions';
 import { CHECK, LEARN } from '../constants/listTypes.constants';
 import { ADD_WORD_VALIDATION_ERROR } from '../constants/modals.constants';
+import { USER_KEY } from '../constants/localStorageKeys.constants';
 import TabPanel from '../components/TabPanel.component';
 import CheckFilter from '../components/CheckFilter.component';
 import AddWordsValidationDialog from '../dialogs/AddWordsValidationDialog.component';
 import AddWords from './AddWords.container';
+import Login from './Login.container';
+import Logout from './Logout.container';
 import WordsList from './wordList/index';
 
 const { GENERATE_QUIZ_REQUEST, SET_MODAL_DATA, SET_MODAL_STATE, SET_TAB_VALUE } = ActionTypes;
@@ -30,9 +33,11 @@ const Dictionary = ({
   modalOpened,
   setModalState,
   setTabValue,
-  tabValue
+  tabValue,
+  user
 }) => {
   const classes = useStyles();
+  const curUser = user || localStorage.getItem(USER_KEY);
 
   const closeModal = (modal, clearData) => {
     setModalState(modal);
@@ -43,6 +48,10 @@ const Dictionary = ({
   };
 
   const handleChange = (event, newValue) => {
+    if (!curUser) {
+      return;
+    }
+
     setTabValue(newValue);
   };
 
@@ -50,9 +59,11 @@ const Dictionary = ({
     <div className={classes.root}>
       <AppBar position="static">
         <Tabs value={tabValue} onChange={handleChange} centered>
-          <Tab label="Learn" />
-          <Tab label="Check" />
-          <Tab label="Add new words" />
+          <Tab label="Learn" disabled={!curUser} />
+          <Tab label="Check" disabled={!curUser} />
+          <Tab label="Add new words" disabled={!curUser} />
+          <Tab label="Log in" className={`${curUser ? "invisible" : ""}`} />
+          <Tab label="Log out" className={`${!curUser ? "invisible" : ""}`} />
         </Tabs>
       </AppBar>
 
@@ -66,6 +77,14 @@ const Dictionary = ({
 
       <TabPanel value={tabValue} index={2}>
         <AddWords />
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={3}>
+        <Login />
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={4}>
+        <Logout />
       </TabPanel>
 
       {
@@ -87,11 +106,16 @@ Dictionary.propTypes = {
   modalOpened: PropTypes.bool.isRequired,
   setModalState: PropTypes.func.isRequired,
   setTabValue: PropTypes.func.isRequired,
-  tabValue: PropTypes.number.isRequired
+  tabValue: PropTypes.number.isRequired,
+  user: PropTypes.shape({
+    name: PropTypes.string,
+    username: PropTypes.string
+  })
 };
 
 const mapStateToProps = state => ({
   addWordsValidationErrors: state.modals.modalData,
+  user: state.user,
   modalOpened: state.modals[ADD_WORD_VALIDATION_ERROR],
   tabValue: state.currentTab.tabValue
 });
