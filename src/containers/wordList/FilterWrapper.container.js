@@ -52,6 +52,7 @@ const FilterWrapper = ({
 
   const onQuizVerify = () => {
     verifyQuiz(wordIds);
+    onFilterClear();
   };
 
   return (

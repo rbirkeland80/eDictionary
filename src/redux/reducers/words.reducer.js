@@ -1,4 +1,5 @@
-import { clone, findIndex, remove } from 'ramda';
+import { ascend, clone, descend, findIndex, prop, remove, reverse, sort } from 'ramda';
+import { differenceInMinutes } from 'date-fns';
 
 import { CHECK, LEARN } from '../../constants/listTypes.constants';
 import ActionTypes from '../actions';
@@ -8,6 +9,7 @@ const {
   FETCH_WORDS_SUCCESS,
   GENERATE_QUIZ_SUCCESS,
   GET_WORD_SUCCESS,
+  SORT_WORDS,
   UPDATE_WORD_SUCCESS,
   VERIFY_QUIZ_SUCCESS
 } = ActionTypes;
@@ -53,6 +55,19 @@ export default (state = initialState, action) => {
       };
     }
 
+    case SORT_WORDS: {
+      const { listType, column, sortDirection } = action.payload;
+      const newList = sortLocally(state[listType].list, column, sortDirection);
+
+      return {
+        ...state,
+        [listType]: {
+          ...state[listType],
+          list: newList
+        }
+      };
+    }
+
     case UPDATE_WORD_SUCCESS: {
       const { data, listType } = action.payload;
       const index = findIndex(w => w._id === data._id, state[listType].list);
@@ -82,3 +97,43 @@ export default (state = initialState, action) => {
       return state;
   }
 };
+
+function sortLocally(list, column, sortDirection) {
+  switch (column.type) {
+    case 'bool': {
+      const byProp = sortDirection === 'asc'
+        ? descend(prop(column.prop))
+        : ascend(prop(column.prop));
+
+      return sort(byProp, list);
+    }
+
+    case 'date': {
+      const sorted = sort((a, b) => {
+        const date1 = a[column.prop] && new Date(a[column.prop]);
+        const date2 = b[column.prop] && new Date(b[column.prop]);
+
+        if (!date1 && !date2) {
+          return 0;
+        }
+
+        if (date1 && date2) {
+          console.log(differenceInMinutes(date1, date2));
+          return differenceInMinutes(date1, date2);
+        }
+
+        return date1 ? 1 : -1;
+      }, list);
+
+      return sortDirection === 'asc' ? sorted : reverse(sorted);
+    }
+
+    default: {
+      const byProp = sortDirection === 'asc'
+        ? ascend(prop(column.prop))
+        : descend(prop(column.prop));
+
+      return sort(byProp, list);
+    }
+  }
+}

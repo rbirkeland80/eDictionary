@@ -28,6 +28,12 @@ const CheckFilter = ({
     onFilterClear();
   };
 
+  const onVerifyQuiz = (reset) => {
+    onFilterClear();
+    onVerify();
+    reset(initialValues);
+  };
+
   const onMaxCountChange = (value, onChange) => {
     const val = Number(value);
 
@@ -96,7 +102,7 @@ const CheckFilter = ({
                 </Button>
                 {
                   showVerify &&
-                  <Button className="mr-2" onClick={onVerify} variant="contained" color="primary">
+                  <Button className="mr-2" onClick={() => onVerifyQuiz(form.restart)} variant="contained" color="primary">
                     Verify
                   </Button>
                 }
