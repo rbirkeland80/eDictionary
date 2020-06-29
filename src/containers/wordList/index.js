@@ -22,7 +22,8 @@ const {
   DELETE_WORD_REQUEST,
   FETCH_WORDS_REQUEST,
   SET_MODAL_DATA,
-  SET_MODAL_STATE
+  SET_MODAL_STATE,
+  SORT_WORDS
 } = ActionTypes;
 
 const useStyles = makeStyles((theme) => ({
@@ -47,6 +48,7 @@ const WordsList = ({
   modalsOpened,
   setModalData,
   setModalState,
+  sortWords,
   tables,
   words
 }) => {
@@ -61,7 +63,7 @@ const WordsList = ({
     map(f => f.additionalProp ? [f.prop, f.additionalProp] : [f.prop], columns)
   );
 
-  useEffect(() => {
+  const prepareAndHandleRequest = () => {
     const baseReqData = { fields, skip: page * rowsPerPage, limit: rowsPerPage, sortDirection, sortProp };
     const req = filterIsApplied ? filterAction : getWords;
     const reqData = filterIsApplied
@@ -69,7 +71,22 @@ const WordsList = ({
       : { ...baseReqData, listType };
 
     req(reqData);
-  }, [listType, page, rowsPerPage, sortDirection, sortProp]);
+  };
+
+  useEffect(() => {
+    prepareAndHandleRequest();
+  }, [listType, page, rowsPerPage]);
+
+  useEffect(() => {
+    if (filterIsApplied) {
+      const column = columns.find(col => col.prop === sortProp);
+      sortWords({ listType, column, sortDirection });
+
+      return;
+    }
+
+    prepareAndHandleRequest();
+  }, [sortDirection, sortProp]);
 
   const closeDialog = (type) => {
     setModalData(null);
@@ -102,7 +119,7 @@ const WordsList = ({
           </Table>
         </TableContainer>
 
-        <Pager count={(list && list.count) || 0} listType={listType} />
+        { !filterIsApplied && <Pager count={(list && list.count) || 0} listType={listType} /> }
       </Paper>
 
       {
@@ -127,6 +144,7 @@ WordsList.propTypes = {
   modalsOpened: PropTypes.object,
   setModalData: PropTypes.func.isRequired,
   setModalState: PropTypes.func.isRequired,
+  sortWords: PropTypes.func.isRequired,
   tables: PropTypes.object.isRequired
 };
 
@@ -140,7 +158,8 @@ const mapDispatchToProps = dispatch => ({
   deleteWord: payload => dispatch({ type: DELETE_WORD_REQUEST, payload }),
   getWords: payload => dispatch({ type: FETCH_WORDS_REQUEST, payload }),
   setModalData: payload => dispatch({ type: SET_MODAL_DATA, payload }),
-  setModalState: (type, value) => dispatch({ type: SET_MODAL_STATE, payload: { type, value } })
+  setModalState: (type, value) => dispatch({ type: SET_MODAL_STATE, payload: { type, value } }),
+  sortWords: payload => dispatch({ type: SORT_WORDS, payload })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WordsList);
