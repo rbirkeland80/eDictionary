@@ -2,6 +2,7 @@ import { put, call, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
 import ActionTypes from '../actions';
+import { LOCAL, PROD } from './api.config';
 
 const {
   CLEAR_USER,
@@ -13,12 +14,11 @@ const {
   SET_TAB_VALUE
 } = ActionTypes;
 
-const url = 'http://localhost:8080/auth/';
-
+const baseUrl = process.env.NODE_ENV === 'production' ? PROD : LOCAL;
 
 export function* login(action) {
   try {
-    const { data } = yield call(axios.post, `${url}login`, action.payload);
+    const { data } = yield call(axios.post, `${baseUrl}/auth/login`, action.payload);
 
     yield put({ type: LOGIN_SUCCESS,  payload: data });
     yield put({ type: SET_TAB_VALUE, payload: 0 });

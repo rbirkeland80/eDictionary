@@ -4,6 +4,7 @@ import axios from 'axios';
 import ActionTypes from '../actions';
 import { ADD_WORD_VALIDATION_ERROR } from '../../constants/modals.constants';
 import { TOKEN_KEY } from '../../constants/localStorageKeys.constants';
+import { LOCAL, PROD } from './api.config';
 
 const {
   CLEAR_USER,
@@ -33,7 +34,8 @@ const {
   VERIFY_QUIZ_FAILURE
 } = ActionTypes;
 
-const url = 'http://localhost:8080/api/words/';
+const baseUrl = process.env.NODE_ENV === 'production' ? PROD : LOCAL;
+const apiUrl = `${baseUrl}/api/words`;
 
 axios.interceptors.request.use(
   config => {
@@ -57,7 +59,7 @@ function getStatusCode(error) {
 export function* deleteWord(action) {
   try {
     const { id, listType } = action.payload;
-    const { data } = yield call(axios.delete, `${url}/${id}`);
+    const { data } = yield call(axios.delete, `${apiUrl}/${id}`);
 
     yield put({ type: DELETE_WORD_SUCCESS,  payload: { data, listType } });
   } catch (error) {
@@ -69,7 +71,7 @@ export function* fetchWords(action) {
   try {
     const { fields, limit = 50, listType, skip = 0, sortDirection, sortProp } = action.payload;
     const { data } = yield call(
-      axios.get, url, { params: { fields, limit, skip, sortDirection, sortProp } }
+      axios.get, apiUrl, { params: { fields, limit, skip, sortDirection, sortProp } }
     );
 
     yield put({ type: FETCH_WORDS_SUCCESS,  payload: { data, listType } });
@@ -90,7 +92,7 @@ export function* fetchWords(action) {
 export function* generateQuiz(action) {
   try {
     const { listType, reqData } = action.payload;
-    const { data } = yield call(axios.post, `${url}/quiz`, reqData);
+    const { data } = yield call(axios.post, `${apiUrl}/quiz`, reqData);
 
     yield put({ type: GENERATE_QUIZ_SUCCESS,  payload: { data, listType } });
   } catch (error) {
@@ -110,7 +112,7 @@ export function* generateQuiz(action) {
 export function* getWord(action) {
   try {
     const id = action.payload;
-    const { data } = yield call(axios.get, `${url}/${id}`);
+    const { data } = yield call(axios.get, `${apiUrl}/${id}`);
 
     yield put({ type: GET_WORD_SUCCESS,  payload: data });
   } catch (error) {
@@ -131,7 +133,7 @@ function* saveWords(action) {
   try {
     const data = action.payload;
     const resp = yield call(
-      axios.post, url, { data }, { validateStatus: status => status === 200 || status === 422 }
+      axios.post, apiUrl, { data }, { validateStatus: status => status === 200 || status === 422 }
     );
 
     yield put({ type: SAVE_WORDS_SUCCESS,  payload: resp.data });
@@ -163,7 +165,7 @@ function* saveWords(action) {
 function* updateWord(action) {
   try {
     const { id, listType, data } = action.payload;
-    const resp = yield call(axios.put, `${url}/${id}`, { ...data });
+    const resp = yield call(axios.put, `${apiUrl}/${id}`, { ...data });
 
     yield put({ type: UPDATE_WORD_SUCCESS, payload: { data: resp.data, listType } });
   } catch (error) {
@@ -182,7 +184,7 @@ function* updateWord(action) {
 
 function* verifyQuiz(action) {
   try {
-    yield call(axios.put, url, { ids: action.payload });
+    yield call(axios.put, apiUrl, { ids: action.payload });
 
     yield put({ type: VERIFY_QUIZ_SUCCESS });
   } catch (error) {
