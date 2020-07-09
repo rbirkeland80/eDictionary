@@ -29,7 +29,7 @@ export function* login(action) {
 
 export function* logout() {
   try {
-    yield call(axios.get, `${url}logout`);
+    yield call(axios.get, `${baseUrl}logout`);
 
     yield put({ type: CLEAR_USER });
     yield put({ type: SET_TAB_VALUE, payload: 0 });
