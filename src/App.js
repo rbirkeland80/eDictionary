@@ -22,7 +22,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
-        <header className="App-header bg-green-light pl-1 d-flex">
+        <header className="text-white bg-green-light pl-1 d-flex">
           <img src={logo} height="55" className="App-logo pr-3" alt="eDictionary" />
           <h3 className="text-green-dark py-2 letter-spacing-1">Have fun learning</h3>
         </header>
