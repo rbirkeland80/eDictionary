@@ -66,9 +66,7 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### Heroku
 
 git push heroku master
-
 heroku open
-
 heroku logs --tail
 
 ### `yarn build` fails to minify
