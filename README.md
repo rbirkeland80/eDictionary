@@ -68,6 +68,7 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 git push heroku master
 heroku open
 heroku logs --tail
+heroku stack:set heroku-20 --app e-dict-j-birk
 
 ### `yarn build` fails to minify
 
